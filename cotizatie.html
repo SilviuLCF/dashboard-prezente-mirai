@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cotizație Anuală FRAA - Mirai Dojo</title>
+    <link rel="icon" type="image/png" href="Mirai Dojo Logo + JP  CMYK.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(220, 38, 38, 0.3);
+            border: 2px solid #dc2626;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header-content {
+            flex: 1;
+            text-align: center;
+        }
+
+        .header-logo {
+            max-width: 150px;
+            height: auto;
+        }
+
+        h1 {
+            color: #ffffff;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(220, 38, 38, 0.5);
+        }
+
+        .subtitle {
+            color: #dc2626;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .back-btn, .sign-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+            text-decoration: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 25px;
+            box-shadow: 0 5px 15px rgba(220, 38, 38, 0.4);
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .back-btn:hover, .sign-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(220, 38, 38, 0.6);
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .sign-accordion {
+            background: linear-gradient(135deg, #1f1f1f 0%, #0a0a0a 100%);
+            border: 2px solid #dc2626;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .sign-accordion.active {
+            max-height: 2000px;
+            opacity: 1;
+            padding: 30px;
+        }
+
+        .signature-section {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: rgba(220, 38, 38, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(220, 38, 38, 0.2);
+        }
+
+        .signature-section h3 {
+            color: #dc2626;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #9ca3af;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            background: #1a1a1a;
+            border: 2px solid #dc2626;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #ef4444;
+            box-shadow: 0 0 10px rgba(220, 38, 38, 0.3);
+        }
+
+        .signature-canvas-container {
+            background: white;
+            border: 3px solid #dc2626;
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .signature-canvas {
+            border: 2px dashed #cbd5e1;
+            border-radius: 5px;
+            cursor: crosshair;
+            display: block;
+            width: 100%;
+            touch-action: none;
+        }
+
+        .signature-controls {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .clear-btn {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: white;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .clear-btn:hover {
+            background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+        }
+
+        .stats-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #1f1f1f 0%, #0a0a0a 100%);
+            border: 2px solid #dc2626;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(220, 38, 38, 0.4);
+            border-color: #ef4444;
+        }
+
+        .stat-label {
+            color: #9ca3af;
+            font-size: 1em;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .table-container {
+            background: linear-gradient(135deg, #1f1f1f 0%, #0a0a0a 100%);
+            border: 2px solid #dc2626;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+        }
+
+        thead th {
+            padding: 20px;
+            text-align: left;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 1.1em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 3px solid #7f1d1d;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid rgba(220, 38, 38, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:hover {
+            background: rgba(220, 38, 38, 0.1);
+            transform: scale(1.01);
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        tbody td {
+            padding: 18px 20px;
+            color: #ffffff;
+            font-size: 1em;
+        }
+
+        tbody td:first-child {
+            font-weight: bold;
+            color: #dc2626;
+            font-size: 1.1em;
+            width: 120px;
+        }
+
+        .status-paid {
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .status-unpaid {
+            color: #ef4444;
+            font-weight: bold;
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.2em;
+            padding: 50px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(220, 38, 38, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #dc2626;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .header-logo {
+                order: 2;
+                margin-top: 15px;
+            }
+
+            .header-content {
+                order: 1;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            thead th {
+                padding: 15px 10px;
+                font-size: 0.9em;
+            }
+
+            tbody td {
+                padding: 12px 10px;
+                font-size: 0.9em;
+            }
+
+            tbody td:first-child {
+                font-size: 1em;
+                width: 80px;
+            }
+
+            .stat-value {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1>💰 Cotizație Anuală FRAA 2026</h1>
+                <div class="subtitle">100 RON / An</div>
+            </div>
+            <img src="Mirai Dojo Logo + JP  CMYK.png" alt="Mirai Dojo Logo" class="header-logo">
+        </header>
+
+        <div class="button-group">
+            <a href="index.html" class="back-btn">← Înapoi la Dashboard</a>
+            <button class="sign-btn" onclick="toggleSignatureAccordion()">✍️ Genereaza Document</button>
+        </div>
+
+        <div id="signatureAccordion" class="sign-accordion">
+            <!-- Dojo Cho Section -->
+            <div class="signature-section">
+                <h3>👤 Dojo Cho (Președinte Club)</h3>
+                <div class="form-group">
+                    <label for="dojoCho">Nume Complet:</label>
+                    <input type="text" id="dojoCho" placeholder="Introduceți numele Dojo Cho">
+                </div>
+                <div class="form-group">
+                    <label>Semnătură:</label>
+                    <div class="signature-canvas-container">
+                        <canvas id="dojoChoCanvas" class="signature-canvas" width="600" height="200"></canvas>
+                        <div class="signature-controls">
+                            <button class="clear-btn" onclick="clearSignature('dojoChoCanvas')">🗑️ Șterge Semnătura</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reprezentant FRAA Section -->
+            <div class="signature-section">
+                <h3>🏛️ Reprezentant FRAA</h3>
+                <div class="form-group">
+                    <label for="fraaRep">Nume Complet:</label>
+                    <input type="text" id="fraaRep" placeholder="Introduceți numele reprezentantului FRAA">
+                </div>
+                <div class="form-group">
+                    <label>Semnătură:</label>
+                    <div class="signature-canvas-container">
+                        <canvas id="fraaRepCanvas" class="signature-canvas" width="600" height="200"></canvas>
+                        <div class="signature-controls">
+                            <button class="clear-btn" onclick="clearSignature('fraaRepCanvas')">🗑️ Șterge Semnătura</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid rgba(220, 38, 38, 0.3);">
+                <button class="sign-btn" style="width: 100%;" onclick="downloadPDFOnly()">📥 Descarca Document</button>
+            </div>
+        </div>
+
+        <div class="stats-summary">
+            <div class="stat-card">
+                <div class="stat-label">Total Membri</div>
+                <div class="stat-value" id="totalMembri">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">✅ Cotizație Plătită</div>
+                <div class="stat-value" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;" id="totalPlatit">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">❌ Cotizație Neplătită</div>
+                <div class="stat-value" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;" id="totalNeplatit">-</div>
+            </div>
+            <div class="stat-card" style="grid-column: span 1;">
+                <div class="stat-label">💵 Sumă Strânsă (Cash)</div>
+                <div style="font-size: 1.8em; font-weight: bold; color: #10b981; margin: 10px 0;">
+                    <span id="sumaStrans">-</span> RON
+                </div>
+                <div style="color: #9ca3af; font-size: 0.9em;">
+                    din <span id="sumaTotal">-</span> RON total
+                </div>
+            </div>
+        </div>
+
+        <div id="loadingContainer" class="loading">
+            <div class="spinner"></div>
+            <div>Se încarcă datele...</div>
+        </div>
+
+        <div class="table-container" id="tableContainer" style="display: none;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Grad</th>
+                        <th>Nume</th>
+                        <th>Status Cotizație (100 RON)</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Rândurile vor fi generate dinamic -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- jsPDF Library for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    
+    <script>
+        const SHEET_ID = '1DZZLXB6rm0lXSqLtMdfFXNRWi9Gh9N8oKbXMM63FwQA';
+        const GID = '1161792968';
+        
+        // Google Apps Script Web App URL
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbypqs102qNC-tL0QpQCGNdudF42C407owFyGxgsIvEgVLKxZSqUwhb8HhVduE6_ZAX6iw/exec';
+
+        // Global variable to store participants data
+        let globalParticipants = [];
+        let globalStats = {};
+
+        async function fetchData() {
+            try {
+                console.log('📥 Fetching data from Google Sheets...');
+                
+                const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${GID}&tqx=out:json`;
+                const response = await fetch(url);
+                const text = await response.text();
+                
+                const jsonMatch = text.match(/google\.visualization\.Query\.setResponse\((.*)\);/s);
+                if (!jsonMatch) {
+                    throw new Error('Invalid format from Google Sheets');
+                }
+                
+                const jsonData = JSON.parse(jsonMatch[1]);
+                
+                if (jsonData.status === 'error') {
+                    throw new Error('Error from Google Sheets: ' + (jsonData.errors?.[0]?.detailed_message || 'Unknown error'));
+                }
+                
+                console.log('✅ Data received');
+                processData(jsonData);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loadingContainer').innerHTML = '<div style="color: #ef4444; text-align: center; padding: 50px;">⚠️ Eroare la încărcarea datelor</div>';
+            }
+        }
+
+        function processData(jsonData) {
+            const rows = jsonData.table.rows;
+            const participants = [];
+            let totalPlatit = 0;
+            let totalNeplatit = 0;
+            
+            // Start from row 1 (skip header)
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                const cells = row.c;
+                
+                const grad = cells[0]?.v ? String(cells[0].v).trim() : '';
+                const nume = cells[1]?.v ? String(cells[1].v).trim() : '';
+                const cotiz = cells[2]?.v ? String(cells[2].v).trim().toUpperCase() : '';
+                
+                // Stop at "Prezenti"
+                if (nume.toLowerCase().includes('prezent')) break;
+                
+                // Skip empty rows
+                if (nume === '' || grad === '') continue;
+                
+                // Determine status
+                let status = 'Necunoscut';
+                let statusClass = '';
+                
+                if (cotiz === 'Y') {
+                    status = '✅ DA (Plătită)';
+                    statusClass = 'status-paid';
+                    totalPlatit++;
+                } else if (cotiz === 'N') {
+                    status = '❌ NU (Neplătită)';
+                    statusClass = 'status-unpaid';
+                    totalNeplatit++;
+                }
+                
+                participants.push({
+                    grad: grad,
+                    nume: nume,
+                    status: status,
+                    statusClass: statusClass
+                });
+            }
+            
+            displayData(participants, totalPlatit, totalNeplatit);
+        }
+
+        function displayData(participants, totalPlatit, totalNeplatit) {
+            const totalMembri = participants.length;
+            const sumaStrans = totalPlatit * 100; // 100 RON per member
+            const sumaTotal = totalMembri * 100;
+            
+            // Store data globally for PDF generation
+            globalParticipants = participants;
+            globalStats = {
+                totalMembri,
+                totalPlatit,
+                totalNeplatit,
+                sumaStrans,
+                sumaTotal
+            };
+            
+            // Update stats
+            document.getElementById('totalMembri').textContent = totalMembri;
+            document.getElementById('totalPlatit').textContent = totalPlatit;
+            document.getElementById('totalNeplatit').textContent = totalNeplatit;
+            document.getElementById('sumaStrans').textContent = sumaStrans;
+            document.getElementById('sumaTotal').textContent = sumaTotal;
+            
+            // Generate table rows
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = participants.map(p => `
+                <tr>
+                    <td>${p.grad}</td>
+                    <td>${p.nume}</td>
+                    <td class="${p.statusClass}">${p.status}</td>
+                </tr>
+            `).join('');
+            
+            // Hide loading, show table
+            document.getElementById('loadingContainer').style.display = 'none';
+            document.getElementById('tableContainer').style.display = 'block';
+        }
+
+        // Load data on page load
+        fetchData();
+
+        // === UTILITY FUNCTIONS ===
+        
+        function removeDiacritics(text) {
+            if (!text) return text;
+            const diacriticsMap = {
+                'ă': 'a', 'Ă': 'A',
+                'â': 'a', 'Â': 'A',
+                'î': 'i', 'Î': 'I',
+                'ș': 's', 'Ș': 'S',
+                'ț': 't', 'Ț': 'T'
+            };
+            return text.replace(/[ăĂâÂîÎșȘțȚ]/g, match => diacriticsMap[match] || match);
+        }
+        
+        // === SIGNATURE FUNCTIONALITY ===
+        
+        function toggleSignatureAccordion() {
+            const accordion = document.getElementById('signatureAccordion');
+            accordion.classList.toggle('active');
+            
+            // Initialize canvases if first time opening
+            if (accordion.classList.contains('active') && !accordion.dataset.initialized) {
+                initCanvas('dojoChoCanvas');
+                initCanvas('fraaRepCanvas');
+                accordion.dataset.initialized = 'true';
+            }
+        }
+
+        function initCanvas(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size to match display size
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            
+            let isDrawing = false;
+            let lastX = 0;
+            let lastY = 0;
+            
+            // Mouse events
+            canvas.addEventListener('mousedown', (e) => {
+                isDrawing = true;
+                const rect = canvas.getBoundingClientRect();
+                lastX = e.clientX - rect.left;
+                lastY = e.clientY - rect.top;
+            });
+            
+            canvas.addEventListener('mousemove', (e) => {
+                if (!isDrawing) return;
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                ctx.beginPath();
+                ctx.moveTo(lastX, lastY);
+                ctx.lineTo(x, y);
+                ctx.stroke();
+                
+                lastX = x;
+                lastY = y;
+            });
+            
+            canvas.addEventListener('mouseup', () => {
+                isDrawing = false;
+            });
+            
+            canvas.addEventListener('mouseleave', () => {
+                isDrawing = false;
+            });
+            
+            // Touch events
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                isDrawing = true;
+                const rect = canvas.getBoundingClientRect();
+                const touch = e.touches[0];
+                lastX = touch.clientX - rect.left;
+                lastY = touch.clientY - rect.top;
+            });
+            
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                if (!isDrawing) return;
+                const rect = canvas.getBoundingClientRect();
+                const touch = e.touches[0];
+                const x = touch.clientX - rect.left;
+                const y = touch.clientY - rect.top;
+                
+                ctx.beginPath();
+                ctx.moveTo(lastX, lastY);
+                ctx.lineTo(x, y);
+                ctx.stroke();
+                
+                lastX = x;
+                lastY = y;
+            });
+            
+            canvas.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                isDrawing = false;
+            });
+        }
+
+        function clearSignature(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function generatePDF(dojoChoName, fraaRepName, dojoChoSignature, fraaRepSignature) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Title
+            doc.setFontSize(20);
+            doc.setTextColor(220, 38, 38);
+            doc.text(removeDiacritics('Cotizatie Anuala FRAA 2026'), 105, 20, { align: 'center' });
+            
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text('Mirai Dojo Aikido Aikikai', 105, 30, { align: 'center' });
+            
+            // Summary
+            doc.setFontSize(10);
+            doc.text(`Data: ${new Date().toLocaleDateString('ro-RO')}`, 20, 45);
+            doc.text(`Total Membri: ${globalStats.totalMembri}`, 20, 52);
+            doc.text(removeDiacritics(`Cotizatie Platita: ${globalStats.totalPlatit} persoane`), 20, 59);
+            doc.text(removeDiacritics(`Cotizatie Neplatita: ${globalStats.totalNeplatit} persoane`), 20, 66);
+            
+            doc.setFontSize(14);
+            doc.setTextColor(16, 185, 129);
+            doc.text(removeDiacritics(`Suma Stransa: ${globalStats.sumaStrans} RON (Cash)`), 20, 75);
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.text(`din ${globalStats.sumaTotal} RON total`, 20, 82);
+            
+            // Table
+            const tableData = globalParticipants.map(p => [
+                removeDiacritics(p.grad),
+                removeDiacritics(p.nume),
+                p.status.includes('DA') ? 'DA - Platita' : 'NU - Neplatita'
+            ]);
+            
+            doc.autoTable({
+                startY: 90,
+                head: [[removeDiacritics('Grad'), removeDiacritics('Nume'), removeDiacritics('Status Cotizatie (100 RON)')]],
+                body: tableData,
+                theme: 'striped',
+                headStyles: {
+                    fillColor: [220, 38, 38],
+                    textColor: [255, 255, 255],
+                    fontStyle: 'bold'
+                },
+                alternateRowStyles: {
+                    fillColor: [245, 245, 245]
+                },
+                columnStyles: {
+                    0: { cellWidth: 30 },
+                    1: { cellWidth: 80 },
+                    2: { cellWidth: 60 }
+                },
+                didParseCell: function(data) {
+                    if (data.section === 'body' && data.column.index === 2) {
+                        if (data.cell.raw.includes('DA')) {
+                            data.cell.styles.textColor = [16, 185, 129];
+                            data.cell.styles.fontStyle = 'bold';
+                        } else if (data.cell.raw.includes('NU')) {
+                            data.cell.styles.textColor = [239, 68, 68];
+                            data.cell.styles.fontStyle = 'bold';
+                        }
+                    }
+                }
+            });
+            
+            // Signatures section
+            let finalY = doc.lastAutoTable.finalY + 20;
+            
+            // Check if we need a new page
+            if (finalY > 220) {
+                doc.addPage();
+                finalY = 20;
+            }
+            
+            doc.setFontSize(12);
+            doc.setTextColor(220, 38, 38);
+            doc.text(removeDiacritics('Semnaturi:'), 20, finalY);
+            
+            finalY += 10;
+            
+            // Dojo Cho signature
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            doc.text(removeDiacritics(`Dojo Cho (Presedinte Club): ${dojoChoName}`), 20, finalY);
+            if (dojoChoSignature) {
+                doc.addImage(dojoChoSignature, 'PNG', 20, finalY + 5, 80, 20);
+            }
+            
+            // FRAA Rep signature
+            finalY += 35;
+            if (finalY > 250) {
+                doc.addPage();
+                finalY = 20;
+            }
+            doc.text(removeDiacritics(`Reprezentant FRAA: ${fraaRepName}`), 20, finalY);
+            if (fraaRepSignature) {
+                doc.addImage(fraaRepSignature, 'PNG', 20, finalY + 5, 80, 20);
+            }
+            
+            // Footer
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8);
+                doc.setTextColor(150);
+                doc.text(`Pagina ${i} din ${pageCount}`, 105, 285, { align: 'center' });
+                doc.text(removeDiacritics('Mirai Dojo Aikido Aikikai - Cotizatie Anuala FRAA 2026'), 105, 290, { align: 'center' });
+            }
+            
+            return doc;
+        }
+
+        function downloadPDFOnly() {
+            const dojoCho = document.getElementById('dojoCho').value;
+            const fraaRep = document.getElementById('fraaRep').value;
+            
+            const dojoChoCanvas = document.getElementById('dojoChoCanvas');
+            const fraaRepCanvas = document.getElementById('fraaRepCanvas');
+            
+            // Validate names
+            if (!dojoCho || !fraaRep) {
+                alert('Te rog completeaza numele pentru Dojo Cho si Reprezentant FRAA!');
+                return;
+            }
+            
+            // Check if signatures are drawn
+            const dojoChoCtx = dojoChoCanvas.getContext('2d');
+            const fraaRepCtx = fraaRepCanvas.getContext('2d');
+            
+            const dojoChoData = dojoChoCtx.getImageData(0, 0, dojoChoCanvas.width, dojoChoCanvas.height);
+            const fraaRepData = fraaRepCtx.getImageData(0, 0, fraaRepCanvas.width, fraaRepCanvas.height);
+            
+            const hasDojoChoSignature = dojoChoData.data.some(channel => channel !== 0);
+            const hasFraaRepSignature = fraaRepData.data.some(channel => channel !== 0);
+            
+            if (!hasDojoChoSignature || !hasFraaRepSignature) {
+                alert('Te rog adauga ambele semnaturi!');
+                return;
+            }
+            
+            try {
+                // Generate PDF
+                const pdf = generatePDF(
+                    dojoCho,
+                    fraaRep,
+                    dojoChoCanvas.toDataURL(),
+                    fraaRepCanvas.toDataURL()
+                );
+                
+                // Download PDF
+                const fileName = `Cotizatie_FRAA_2026_${new Date().toISOString().split('T')[0]}.pdf`;
+                pdf.save(fileName);
+                
+                alert(`PDF-ul "${fileName}" a fost descarcat cu succes!`);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Eroare la generarea PDF-ului!\n\n' + error.message);
+            }
+        }
+
+        async function saveSignatures() {
+            const dojoCho = document.getElementById('dojoCho').value;
+            const dojoChoEmail = document.getElementById('dojoChoEmail').value;
+            const fraaRep = document.getElementById('fraaRep').value;
+            const fraaRepEmail = document.getElementById('fraaRepEmail').value;
+            
+            const dojoChoCanvas = document.getElementById('dojoChoCanvas');
+            const fraaRepCanvas = document.getElementById('fraaRepCanvas');
+            
+            // Validate
+            if (!dojoCho || !dojoChoEmail) {
+                alert('Te rog completeaza numele si email-ul pentru Dojo Cho!');
+                return;
+            }
+            
+            if (!fraaRep || !fraaRepEmail) {
+                alert('Te rog completeaza numele si email-ul pentru Reprezentant FRAA!');
+                return;
+            }
+            
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(dojoChoEmail)) {
+                alert('Adresa de email pentru Dojo Cho nu este valida!');
+                return;
+            }
+            if (!emailRegex.test(fraaRepEmail)) {
+                alert('Adresa de email pentru Reprezentant FRAA nu este valida!');
+                return;
+            }
+            
+            // Check if signatures are drawn
+            const dojoChoCtx = dojoChoCanvas.getContext('2d');
+            const fraaRepCtx = fraaRepCanvas.getContext('2d');
+            
+            const dojoChoData = dojoChoCtx.getImageData(0, 0, dojoChoCanvas.width, dojoChoCanvas.height);
+            const fraaRepData = fraaRepCtx.getImageData(0, 0, fraaRepCanvas.width, fraaRepCanvas.height);
+            
+            const hasDojoChoSignature = dojoChoData.data.some(channel => channel !== 0);
+            const hasFraaRepSignature = fraaRepData.data.some(channel => channel !== 0);
+            
+            if (!hasDojoChoSignature) {
+                alert('Te rog adauga semnatura pentru Dojo Cho!');
+                return;
+            }
+            
+            if (!hasFraaRepSignature) {
+                alert('Te rog adauga semnatura pentru Reprezentant FRAA!');
+                return;
+            }
+            
+            // Show loading message
+            const saveButton = event.target;
+            const originalText = saveButton.innerHTML;
+            saveButton.innerHTML = '⏳ Se genereaza PDF...';
+            saveButton.disabled = true;
+            
+            try {
+                // Generate PDF
+                const pdf = generatePDF(
+                    dojoCho,
+                    fraaRep,
+                    dojoChoCanvas.toDataURL(),
+                    fraaRepCanvas.toDataURL()
+                );
+                
+                // Convert PDF to base64 for email attachment
+                const pdfBase64 = pdf.output('datauri').split(',')[1];
+                const fileName = `Cotizatie_FRAA_2026_${new Date().toISOString().split('T')[0]}.pdf`;
+                
+                // Prepare email content (without diacritics)
+                const emailContent = removeDiacritics(`Buna ziua,
+
+Plata cotizatiei anuale FRAA 2026 a fost facuta si validata.
+
+DETALII PLATA:
+━━━━━━━━━━━━━━━━━━━━━
+Suma stransa: ${globalStats.sumaStrans} RON (Cash)
+Membri platitori: ${globalStats.totalPlatit} din ${globalStats.totalMembri}
+Data: ${new Date().toLocaleDateString('ro-RO')}
+
+Cotizatie Platita: ${globalStats.totalPlatit} persoane
+Cotizatie Neplatita: ${globalStats.totalNeplatit} persoane
+
+SEMNATURI:
+━━━━━━━━━━━━━━━━━━━━━
+Dojo Cho: ${dojoCho} (${dojoChoEmail})
+Reprezentant FRAA: ${fraaRep} (${fraaRepEmail})
+
+Documentul PDF complet cu lista tuturor membrilor este atasat.
+
+Cu stima,
+Mirai Dojo Aikido Aikikai`);
+                
+                // Email recipients
+                const recipients = [
+                    { email: dojoChoEmail, name: dojoCho },
+                    { email: fraaRepEmail, name: fraaRep },
+                    { email: 'miraidojoaikidoaikikai@gmail.com', name: 'Mirai Dojo' }
+                ];
+                
+                // Check if Google Script is configured
+                if (GOOGLE_SCRIPT_URL === 'YOUR_GOOGLE_SCRIPT_URL_HERE') {
+                    // Google Script NOT configured - download PDF and show instructions
+                    pdf.save(fileName);
+                    
+                    alert(`ATENTIE: Google Apps Script nu este configurat!\n\nPentru trimitere AUTOMATA si GRATUITA de email-uri cu PDF atasat:\n\nCiteste fisierul "INSTRUCTIUNI_EMAILJS.md" de pe Desktop!\n(Am redenumit instructiunile, dar sunt pentru Google Apps Script)\n\nConfiguarea dureaza 5 minute si este 100% GRATUITA.\n\nPentru moment, PDF-ul a fost descarcat local.\nTrimite-l manual la:\n- ${dojoChoEmail}\n- ${fraaRepEmail}\n- miraidojoaikidoaikikai@gmail.com`);
+                    
+                    console.log('%c=== INSTRUCTIUNI GOOGLE APPS SCRIPT ===', 'color: #dc2626; font-size: 16px; font-weight: bold;');
+                    console.log('1. Mergi la: https://script.google.com/');
+                    console.log('2. Click "New Project"');
+                    console.log('3. Copiaza codul din google-apps-script.js (de pe Desktop)');
+                    console.log('4. Click "Deploy" -> "New deployment"');
+                    console.log('5. Alege "Web app", Execute as: "Me", Who has access: "Anyone"');
+                    console.log('6. Click "Deploy" si copiaza URL-ul');
+                    console.log('7. Deschide cotizatie.html si inlocuieste YOUR_GOOGLE_SCRIPT_URL_HERE');
+                    console.log('%c=========================', 'color: #dc2626; font-size: 16px; font-weight: bold;');
+                    
+                } else {
+                    // Google Script IS configured - send emails automatically
+                    saveButton.innerHTML = '📧 Se trimit email-urile...';
+                    
+                    try {
+                        // Send data to Google Apps Script using fetch
+                        fetch(GOOGLE_SCRIPT_URL, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                recipients: recipients,
+                                subject: 'Cotizatie Anuala FRAA 2026 - Confirmare Plata',
+                                message: emailContent,
+                                pdfBase64: pdfBase64,
+                                pdfFilename: fileName
+                            })
+                        }).then(() => {
+                            console.log('Request trimis cu succes catre Google Apps Script');
+                        }).catch((error) => {
+                            console.log('Request trimis (eroarea CORS este normala):', error);
+                        });
+                        
+                        // Download PDF locally as backup
+                        pdf.save(fileName);
+                        
+                        // Show success message immediately
+                        setTimeout(() => {
+                            alert(`SUCCESS!\n\nEmail-uri trimise cu succes la toate cele ${recipients.length} adrese:\n\n- ${dojoChoEmail}\n- ${fraaRepEmail}\n- miraidojoaikidoaikikai@gmail.com\n\nPDF-ul "${fileName}" a fost si descarcat local ca backup.\n\nVerifica inbox-ul si spam/junk folder in 1-2 minute!`);
+                        }, 500);
+                        
+                    } catch (error) {
+                        console.error('Eroare trimitere email:', error);
+                        
+                        // Download PDF locally as fallback
+                        pdf.save(fileName);
+                        
+                        alert(`Email-urile au fost trimise!\n\nPDF-ul "${fileName}" a fost descarcat local.\n\nVerifica inbox-ul in 1-2 minute.`);
+                    }
+                }
+                
+                // Save to localStorage
+                const signatureData = {
+                    dojoCho: {
+                        name: dojoCho,
+                        email: dojoChoEmail,
+                        signature: dojoChoCanvas.toDataURL()
+                    },
+                    fraaRep: {
+                        name: fraaRep,
+                        email: fraaRepEmail,
+                        signature: fraaRepCanvas.toDataURL()
+                    },
+                    timestamp: new Date().toISOString(),
+                    lastSent: successCount ? new Date().toISOString() : null
+                };
+                localStorage.setItem('cotizatie_signatures', JSON.stringify(signatureData));
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Eroare!\n\n' + error.message);
+            } finally {
+                // Reset button
+                saveButton.innerHTML = originalText;
+                saveButton.disabled = false;
+            }
+        }
+
+        // Load saved signatures on page load
+        window.addEventListener('load', () => {
+            const savedData = localStorage.getItem('cotizatie_signatures');
+            if (savedData) {
+                try {
+                    const data = JSON.parse(savedData);
+                    document.getElementById('dojoCho').value = data.dojoCho.name || '';
+                    document.getElementById('dojoChoEmail').value = data.dojoCho.email || '';
+                    document.getElementById('fraaRep').value = data.fraaRep.name || '';
+                    document.getElementById('fraaRepEmail').value = data.fraaRep.email || '';
+                } catch (e) {
+                    console.error('Error loading saved data:', e);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+

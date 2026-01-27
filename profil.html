@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Silviu Ghimposanu</title>
+    <link rel="icon" type="image/png" href="Mirai Dojo Logo + JP  CMYK.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .back-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+            text-decoration: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(220, 38, 38, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(220, 38, 38, 0.6);
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .buttons-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .logout-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #6b7280 0%, #374151 100%);
+            color: white;
+            text-decoration: none;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(107, 114, 128, 0.4);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(107, 114, 128, 0.6);
+            background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+        }
+
+        .profile-card {
+            background: linear-gradient(135deg, #1f1f1f 0%, #0a0a0a 100%);
+            border: 2px solid #dc2626;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(220, 38, 38, 0.3);
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .profile-photo-container {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            border: 5px solid #ffffff;
+            overflow: hidden;
+            background: #1a1a1a;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .profile-photo-container:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+        }
+
+        .profile-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        .profile-photo.active {
+            display: block;
+        }
+
+        .photo-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            color: #dc2626;
+        }
+
+        .photo-upload-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .photo-upload-btn:hover {
+            background: #ef4444;
+            transform: scale(1.1);
+        }
+
+        .profile-name {
+            color: #ffffff;
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .profile-grade {
+            color: #ffffff;
+            font-size: 1.5em;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+
+        .budopass-card {
+            background: rgba(220, 38, 38, 0.2);
+            border: 2px solid rgba(220, 38, 38, 0.5);
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-top: 20px;
+            display: inline-block;
+            min-width: 250px;
+        }
+
+        .budopass-label {
+            color: #000000;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .budopass-value {
+            color: #ffffff;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .cale-card {
+            background: rgba(220, 38, 38, 0.2);
+            border: 2px solid rgba(220, 38, 38, 0.5);
+            border-radius: 12px;
+            padding: 20px 25px;
+            margin: 20px auto 0 auto;
+            width: 100%;
+            max-width: 550px;
+        }
+
+        .cale-text {
+            color: #ffffff;
+            font-size: 1.1em;
+            font-weight: 600;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .cale-text span {
+            color: #000000;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .profile-body {
+            padding: 40px 30px;
+        }
+
+        .info-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            color: #dc2626;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(220, 38, 38, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .info-item {
+            background: rgba(220, 38, 38, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .info-item:hover {
+            background: rgba(220, 38, 38, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(220, 38, 38, 0.2);
+        }
+
+        .info-label {
+            color: #9ca3af;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .info-value {
+            color: #ffffff;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .info-value.success {
+            color: #10b981;
+        }
+
+        .info-value.warning {
+            color: #f59e0b;
+        }
+
+        .info-value.error {
+            color: #ef4444;
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.2em;
+            padding: 50px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(220, 38, 38, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #dc2626;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .profile-name {
+                font-size: 2em;
+            }
+
+            .profile-grade {
+                font-size: 1.2em;
+            }
+
+            .profile-photo-container {
+                width: 150px;
+                height: 150px;
+            }
+
+            .budopass-card {
+                min-width: auto;
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .cale-card {
+                max-width: 100%;
+                padding: 15px 20px;
+            }
+
+            .cale-text {
+                font-size: 1em;
+            }
+
+            .cale-text span {
+                font-size: 1.1em;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="buttons-container">
+            <a href="index.html" class="back-btn">← Înapoi la Dashboard</a>
+            <button class="logout-btn" onclick="handleLogout()">🚪 Logout</button>
+        </div>
+
+        <div id="loadingContainer" class="loading">
+            <div class="spinner"></div>
+            <div>Se încarcă profilul...</div>
+        </div>
+
+        <div class="profile-card" id="profileCard" style="display: none;">
+            <div class="profile-header">
+                <div class="profile-photo-container" onclick="document.getElementById('photoInput').click()">
+                    <div class="photo-placeholder" id="photoPlaceholder">👤</div>
+                    <img id="profilePhoto" class="profile-photo" alt="Silviu Ghimposanu">
+                    <button class="photo-upload-btn" title="Încarcă poză">📷</button>
+                </div>
+                <input type="file" id="photoInput" accept="image/*">
+                <h1 class="profile-name" id="profileName">-</h1>
+                <div class="profile-grade" id="profileGrade">-</div>
+                
+                <!-- Budopass Card -->
+                <div class="budopass-card">
+                    <div class="budopass-label">Serie Budopass</div>
+                    <div class="budopass-value" id="serieBudopass">-</div>
+                </div>
+                
+                <!-- Data Inscriere Card -->
+                <div class="budopass-card">
+                    <div class="budopass-label">Data Înscriere în Mirai Dojo</div>
+                    <div class="budopass-value" id="dataInscriere">-</div>
+                </div>
+                
+                <!-- Esti pe Cale Card -->
+                <div class="cale-card">
+                    <div class="cale-text">Ești pe Cale, alături de noi de <span id="aniPractica">-</span> ani și <span id="zilePeCale">-</span> zile</div>
+                </div>
+            </div>
+
+            <div class="profile-body">
+                <div class="info-section">
+                    <div class="section-title">
+                        📋 Informații Generale
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Grad Actual</div>
+                            <div class="info-value" id="grad">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Ultimul Examen</div>
+                            <div class="info-value" id="lastExam">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Pregătit pentru Examen</div>
+                            <div class="info-value" id="readyForExam">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <div class="section-title">
+                        📊 Statistici Practică
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Zile Practică</div>
+                            <div class="info-value" id="zilePractica">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Ore Practică</div>
+                            <div class="info-value" id="orePractica">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Ultimul Antrenament</div>
+                            <div class="info-value" id="lastTraining">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <div class="section-title">
+                        🌍 Stagii Naționale și Internaționale
+                    </div>
+                    <div id="seminarsContainer" style="padding: 20px;">
+                        <div style="color: #9ca3af; text-align: center;">Se încarcă...</div>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <div class="section-title">
+                        📄 Documente & Status
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">NSSM</div>
+                            <div class="info-value" id="nssm">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Cotizație Anuală FRAA</div>
+                            <div class="info-value" id="cotizatie">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Adeverință Medicală 2026</div>
+                            <div class="info-value" id="adeverinta">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SHEET_ID = '1DZZLXB6rm0lXSqLtMdfFXNRWi9Gh9N8oKbXMM63FwQA';
+        const GID = '1161792968';
+        
+        // Get logged in user from localStorage
+        const LOGGED_IN_USER = localStorage.getItem('logged_in_user');
+        const TARGET_NAME = LOGGED_IN_USER;
+        
+        // Check if user is logged in
+        if (!LOGGED_IN_USER) {
+            // Redirect to dashboard if not logged in
+            alert('Te rog sa te autentifici mai intai!');
+            window.location.href = 'index.html';
+        }
+
+        // Handle logout
+        function handleLogout() {
+            if (confirm('Ești sigur că vrei să te deconectezi?')) {
+                // Clear login data from localStorage
+                localStorage.removeItem('logged_in_user');
+                localStorage.removeItem('logged_in_username');
+                
+                // Redirect to dashboard
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Load saved photo from localStorage
+        function loadSavedPhoto() {
+            const savedPhoto = localStorage.getItem('profile_photo_silviu');
+            if (savedPhoto) {
+                const photoElement = document.getElementById('profilePhoto');
+                const placeholder = document.getElementById('photoPlaceholder');
+                photoElement.src = savedPhoto;
+                photoElement.classList.add('active');
+                placeholder.style.display = 'none';
+            }
+        }
+
+        // Handle photo upload
+        document.getElementById('photoInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const photoElement = document.getElementById('profilePhoto');
+                    const placeholder = document.getElementById('photoPlaceholder');
+                    photoElement.src = event.target.result;
+                    photoElement.classList.add('active');
+                    placeholder.style.display = 'none';
+                    
+                    // Save to localStorage
+                    localStorage.setItem('profile_photo_silviu', event.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        async function fetchProfileData() {
+            try {
+                console.log('📥 Fetching profile data...');
+                
+                const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${GID}&tqx=out:json`;
+                const response = await fetch(url);
+                const text = await response.text();
+                
+                const jsonMatch = text.match(/google\.visualization\.Query\.setResponse\((.*)\);/s);
+                if (!jsonMatch) {
+                    throw new Error('Invalid format from Google Sheets');
+                }
+                
+                const jsonData = JSON.parse(jsonMatch[1]);
+                
+                if (jsonData.status === 'error') {
+                    throw new Error('Error from Google Sheets');
+                }
+                
+                console.log('✅ Data received');
+                processProfileData(jsonData);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loadingContainer').innerHTML = '<div style="color: #ef4444; text-align: center; padding: 50px;">⚠️ Eroare la încărcarea profilului</div>';
+            }
+        }
+
+        function formatDateForLastExam(dateStr) {
+            if (!dateStr) return 'N/A';
+            
+            // Handle Excel serial number (5-digit number like 46044)
+            if (/^\d{5}$/.test(dateStr)) {
+                const excelSerialNumber = parseInt(dateStr);
+                const excelEpoch = new Date(1899, 11, 30);
+                const date = new Date(excelEpoch.getTime() + excelSerialNumber * 24 * 60 * 60 * 1000);
+                const day = date.getDate();
+                const monthNames = ['ian', 'feb', 'mar', 'apr', 'mai', 'iun', 'iul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+                const month = monthNames[date.getMonth()];
+                const year = date.getFullYear();
+                return `${day} - ${month} ${year}`;
+            }
+            
+            const romanianMonths = {
+                'jan': 'ian', 'feb': 'feb', 'mar': 'mar', 'apr': 'apr',
+                'may': 'mai', 'jun': 'iun', 'jul': 'iul', 'aug': 'aug',
+                'sep': 'sep', 'oct': 'oct', 'nov': 'nov', 'dec': 'dec'
+            };
+            
+            // Handle Date(YYYY,M,D) format
+            // Note: In Google Sheets Date(YYYY,M,D), M is 0-indexed (0=January, 4=May)
+            if (dateStr.includes('Date(')) {
+                const match = dateStr.match(/Date\((\d{4}),(\d{1,2}),(\d{1,2})\)/);
+                if (match) {
+                    const year = match[1];
+                    const month = parseInt(match[2]); // Already 0-indexed!
+                    const day = parseInt(match[3]);
+                    const monthNames = ['ian', 'feb', 'mar', 'apr', 'mai', 'iun', 'iul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+                    return `${day} - ${monthNames[month]} ${year}`; // No need to subtract 1!
+                }
+            }
+            
+            // Try to parse as Date object
+            try {
+                const date = new Date(dateStr);
+                if (!isNaN(date.getTime())) {
+                    const day = date.getDate();
+                    const monthNames = ['ian', 'feb', 'mar', 'apr', 'mai', 'iun', 'iul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+                    const month = monthNames[date.getMonth()];
+                    const year = date.getFullYear();
+                    return `${day} - ${month} ${year}`;
+                }
+            } catch (e) {}
+            
+            return dateStr;
+        }
+
+        function processProfileData(jsonData) {
+            const rows = jsonData.table.rows;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            // Get header dates from first row
+            const headerRow = rows[0];
+            
+            // Find Silviu Ghimposanu in the data
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                const cells = row.c;
+                
+                const nume = cells[1]?.v ? String(cells[1].v).trim() : '';
+                
+                if (nume.toLowerCase().includes('prezent')) break;
+                
+                if (nume.toLowerCase() === TARGET_NAME.toLowerCase()) {
+                    // Found the person!
+                    const grad = cells[0]?.v ? String(cells[0].v).trim() : '-';
+                    const cotizatie = cells[2]?.v ? String(cells[2].v).trim().toUpperCase() : 'N'; // Column C
+                    const nssm = cells[3]?.v ? String(cells[3].v).trim().toUpperCase() : 'N'; // Column D
+                    const adeverinta = cells[4]?.v ? String(cells[4].v).trim().toUpperCase() : 'N'; // Column E
+                    const lastExam = cells[10]?.v ? formatDateForLastExam(String(cells[10].v)) : 'N/A';
+                    const zilePractica = cells[7]?.v ? String(cells[7].v) : '0';
+                    const orePractica = cells[8]?.v ? String(cells[8].v) : '0';
+                    const readyForExam = cells[11]?.v ? String(cells[11].v).trim().toUpperCase() : 'N';
+                    
+                    // Find last training date
+                    let lastTrainingDate = null;
+                    let lastTrainingDateStr = 'Niciun antrenament găsit';
+                    
+                    // Check training columns starting from column 12 (M)
+                    for (let colIndex = 12; colIndex < cells.length; colIndex++) {
+                        // Get header date from first row
+                        const headerCell = headerRow.c[colIndex];
+                        if (!headerCell || !headerCell.v) continue;
+                        
+                        const headerValue = String(headerCell.v).trim();
+                        
+                        // Skip columns with "seminar" in header
+                        if (headerValue.toLowerCase().includes('seminar')) {
+                            continue;
+                        }
+                        
+                        // Try to parse as date
+                        let columnDate = null;
+                        
+                        // Check if it's an Excel serial number (5-digit number like 46044)
+                        if (/^\d{5}$/.test(headerValue)) {
+                            // Excel serial number: days since January 1, 1900
+                            const excelSerialNumber = parseInt(headerValue);
+                            // Excel wrongly considers 1900 as a leap year, so we need to adjust
+                            const excelEpoch = new Date(1899, 11, 30, 0, 0, 0, 0);
+                            const tempDate = new Date(excelEpoch.getTime() + excelSerialNumber * 24 * 60 * 60 * 1000);
+                            // Create new date with just year, month, day (no time)
+                            columnDate = new Date(tempDate.getFullYear(), tempDate.getMonth(), tempDate.getDate(), 0, 0, 0, 0);
+                        } else {
+                            // Try different date formats
+                            const dateFormats = [
+                                /(\d{1,2})-([A-Za-z]{3})-(\d{4})/, // DD-MMM-YYYY
+                                /(\d{1,2})\/(\d{1,2})\/(\d{4})/, // DD/MM/YYYY
+                                /(\d{1,2})\.(\d{1,2})\.(\d{4})/, // DD.MM.YYYY
+                                /(\d{4})-(\d{1,2})-(\d{1,2})/ // YYYY-MM-DD
+                            ];
+                            
+                            for (const format of dateFormats) {
+                                const match = headerValue.match(format);
+                                if (match) {
+                                    columnDate = new Date(headerValue);
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        if (!columnDate || isNaN(columnDate.getTime())) {
+                            continue;
+                        }
+                        
+                        if (columnDate > today) {
+                            continue;
+                        }
+                        
+                        // Check if person was present
+                        const attendanceCell = cells[colIndex];
+                        if (!attendanceCell || !attendanceCell.v) {
+                            continue;
+                        }
+                        
+                        const attendanceValue = String(attendanceCell.v).trim().toUpperCase();
+                        
+                        if (attendanceValue === 'P' || attendanceValue === 'M') {
+                            if (!lastTrainingDate || columnDate > lastTrainingDate) {
+                                lastTrainingDate = columnDate;
+                                lastTrainingDateStr = formatDateForLastExam(headerValue);
+                            }
+                        }
+                    }
+                    
+                    // Update UI with name
+                    document.getElementById('profileName').textContent = nume;
+                    document.title = nume; // Update page title
+                    
+                    // Add black belt icon for grades ending with 'D'
+                    const gradDisplay = grad.toUpperCase().endsWith('D') ? `${grad} 🥋` : grad;
+                    document.getElementById('grad').textContent = gradDisplay;
+                    document.getElementById('profileGrade').textContent = gradDisplay;
+                    document.getElementById('lastExam').textContent = lastExam;
+                    document.getElementById('zilePractica').textContent = zilePractica;
+                    document.getElementById('orePractica').textContent = orePractica;
+                    document.getElementById('lastTraining').textContent = lastTrainingDateStr;
+                    
+                    const readyElement = document.getElementById('readyForExam');
+                    if (readyForExam === 'Y') {
+                        readyElement.textContent = '✓ Yes';
+                        readyElement.classList.add('success');
+                    } else {
+                        readyElement.textContent = '✗ No';
+                        readyElement.classList.add('error');
+                    }
+                    
+                    // Update NSSM status
+                    const nssmElement = document.getElementById('nssm');
+                    if (nssm === 'Y') {
+                        nssmElement.textContent = '✓ Semnat';
+                        nssmElement.classList.add('success');
+                    } else {
+                        nssmElement.textContent = '✗ Nesemnat';
+                        nssmElement.classList.add('error');
+                    }
+                    
+                    // Update Cotizație status
+                    const cotizatieElement = document.getElementById('cotizatie');
+                    if (cotizatie === 'Y') {
+                        cotizatieElement.textContent = '✓ Plătită';
+                        cotizatieElement.classList.add('success');
+                    } else {
+                        cotizatieElement.textContent = '✗ Neplătită';
+                        cotizatieElement.classList.add('error');
+                    }
+                    
+                    // Update Adeverință status
+                    const adeverintaElement = document.getElementById('adeverinta');
+                    if (adeverinta === 'Y') {
+                        adeverintaElement.textContent = '✓ Valabilă';
+                        adeverintaElement.classList.add('success');
+                    } else {
+                        adeverintaElement.textContent = '✗ Lipsă';
+                        adeverintaElement.classList.add('error');
+                    }
+                    
+                    // Find and display seminars for this user
+                    displayUserSeminars(jsonData, i);
+                    
+                    // Show profile card
+                    document.getElementById('loadingContainer').style.display = 'none';
+                    document.getElementById('profileCard').style.display = 'block';
+                    
+                    // Load saved photo
+                    loadSavedPhoto();
+                    
+                    return;
+                }
+            }
+            
+            // Not found
+            document.getElementById('loadingContainer').innerHTML = '<div style="color: #f59e0b; text-align: center; padding: 50px;">⚠️ Profilul nu a fost găsit</div>';
+        }
+
+        function displayUserSeminars(jsonData, userRowIndex) {
+            const rows = jsonData.table.rows;
+            const headerRow = rows[0];
+            const userRow = rows[userRowIndex];
+            const userCells = userRow.c;
+            
+            const seminars = [];
+            
+            // Search for columns with "Seminar" in the first 10 rows (starting from column 12/M)
+            for (let colIndex = 12; colIndex < headerRow.c.length; colIndex++) {
+                let seminarTitle = null;
+                
+                // Check first 10 rows for seminar title
+                for (let rowIdx = 0; rowIdx < Math.min(10, rows.length); rowIdx++) {
+                    const cell = rows[rowIdx].c[colIndex];
+                    if (cell && cell.v) {
+                        const cellValue = String(cell.v);
+                        if (cellValue.toLowerCase().includes('seminar')) {
+                            seminarTitle = cellValue;
+                            break;
+                        }
+                    }
+                }
+                
+                if (seminarTitle) {
+                    // Check if user participated (value starts with 'S')
+                    const userCell = userCells[colIndex];
+                    if (userCell && userCell.v) {
+                        const participationValue = String(userCell.v).trim();
+                        if (participationValue.toUpperCase().startsWith('S')) {
+                            seminars.push({
+                                title: seminarTitle,
+                                level: participationValue
+                            });
+                        }
+                    }
+                }
+            }
+            
+            // Display seminars
+            const container = document.getElementById('seminarsContainer');
+            
+            if (seminars.length === 0) {
+                container.innerHTML = '<div style="color: #9ca3af; text-align: center;">Nu a participat la niciun stagiu încă</div>';
+            } else {
+                let html = '<div style="display: flex; flex-direction: column; gap: 10px;">';
+                
+                seminars.forEach(seminar => {
+                    html += `
+                        <div style="background: rgba(220, 38, 38, 0.1); border-left: 3px solid #dc2626; padding: 12px 15px; border-radius: 8px;">
+                            <div style="color: #fff; font-weight: 600; margin-bottom: 5px;">${seminar.title}</div>
+                            <div style="color: #9ca3af; font-size: 0.9em;">Sesiuni: <span style="color: #dc2626; font-weight: 600;">${seminar.level}</span></div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+                container.innerHTML = html;
+            }
+        }
+
+        // Fetch Budopass from Overview sheet
+        async function fetchBudopass() {
+            try {
+                const OVERVIEW_GID = '1028151677'; // Overview sheet GID
+                const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${OVERVIEW_GID}&tqx=out:json`;
+                
+                const response = await fetch(url);
+                const text = await response.text();
+                
+                const jsonMatch = text.match(/google\.visualization\.Query\.setResponse\((.*)\);/s);
+                if (!jsonMatch) {
+                    throw new Error('Invalid format from Google Sheets');
+                }
+                
+                const jsonData = JSON.parse(jsonMatch[1]);
+                
+                if (jsonData.status === 'error') {
+                    throw new Error('Error from Google Sheets');
+                }
+                
+                const rows = jsonData.table.rows;
+                
+                // Search for the user in Overview sheet
+                // Column A = Nume, Column B = Budo Pass
+                for (let i = 0; i < rows.length; i++) {
+                    const row = rows[i];
+                    const cells = row.c;
+                    
+                    if (!cells || cells.length < 2) continue;
+                    
+                    const nume = cells[0]?.v ? String(cells[0].v).trim() : '';
+                    const serieBudopass = cells[1]?.v ? String(cells[1].v).trim() : '';
+                    
+                    // Skip header row
+                    if (nume.toLowerCase() === 'nume' || nume.toLowerCase().includes('budo')) continue;
+                    
+                    if (nume && nume.toLowerCase() === TARGET_NAME.toLowerCase()) {
+                        // Found the user!
+                        const budopassElement = document.getElementById('serieBudopass');
+                        if (serieBudopass) {
+                            budopassElement.textContent = serieBudopass;
+                        } else {
+                            budopassElement.textContent = '-';
+                        }
+                        return;
+                    }
+                }
+                
+                // User not found
+                document.getElementById('serieBudopass').textContent = '-';
+                
+            } catch (error) {
+                console.error('Error fetching Budopass:', error);
+                document.getElementById('serieBudopass').textContent = '-';
+            }
+        }
+
+        // Fetch Data Inscriere from Overview sheet (Column C)
+        async function fetchDataInscriere() {
+            try {
+                const OVERVIEW_GID = '1028151677'; // Overview sheet GID
+                const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${OVERVIEW_GID}&tqx=out:json`;
+                
+                const response = await fetch(url);
+                const text = await response.text();
+                
+                const jsonMatch = text.match(/google\.visualization\.Query\.setResponse\((.*)\);/s);
+                if (!jsonMatch) {
+                    throw new Error('Invalid format from Google Sheets');
+                }
+                
+                const jsonData = JSON.parse(jsonMatch[1]);
+                
+                if (jsonData.status === 'error') {
+                    throw new Error('Error from Google Sheets');
+                }
+                
+                const rows = jsonData.table.rows;
+                
+                // Search for the user in Overview sheet
+                // Column A = Nume, Column C = Data Inscriere
+                for (let i = 0; i < rows.length; i++) {
+                    const row = rows[i];
+                    const cells = row.c;
+                    
+                    if (!cells || cells.length < 3) continue;
+                    
+                    const nume = cells[0]?.v ? String(cells[0].v).trim() : '';
+                    const dataInscriereRaw = cells[2]?.v; // Column C
+                    
+                    // Skip header row
+                    if (nume.toLowerCase() === 'nume' || nume.toLowerCase().includes('budo')) continue;
+                    
+                    if (nume && nume.toLowerCase() === TARGET_NAME.toLowerCase()) {
+                        // Found the user!
+                        const dataInscriereElement = document.getElementById('dataInscriere');
+                        if (dataInscriereRaw) {
+                            // Format the date
+                            const formattedDate = formatDateForLastExam(dataInscriereRaw);
+                            dataInscriereElement.textContent = formattedDate;
+                        } else {
+                            dataInscriereElement.textContent = '-';
+                        }
+                        return;
+                    }
+                }
+                
+                // User not found
+                document.getElementById('dataInscriere').textContent = '-';
+                
+            } catch (error) {
+                console.error('Error fetching Data Inscriere:', error);
+                document.getElementById('dataInscriere').textContent = '-';
+            }
+        }
+
+        // Fetch Ani si Zile pe Cale from Overview sheet (Columns D and E)
+        async function fetchPeCale() {
+            try {
+                const OVERVIEW_GID = '1028151677'; // Overview sheet GID
+                const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${OVERVIEW_GID}&tqx=out:json`;
+                
+                const response = await fetch(url);
+                const text = await response.text();
+                
+                const jsonMatch = text.match(/google\.visualization\.Query\.setResponse\((.*)\);/s);
+                if (!jsonMatch) {
+                    throw new Error('Invalid format from Google Sheets');
+                }
+                
+                const jsonData = JSON.parse(jsonMatch[1]);
+                
+                if (jsonData.status === 'error') {
+                    throw new Error('Error from Google Sheets');
+                }
+                
+                const rows = jsonData.table.rows;
+                
+                // Search for the user in Overview sheet
+                // Column A = Nume, Column D = Ani, Column E = Zile
+                for (let i = 0; i < rows.length; i++) {
+                    const row = rows[i];
+                    const cells = row.c;
+                    
+                    if (!cells || cells.length < 5) continue;
+                    
+                    const nume = cells[0]?.v ? String(cells[0].v).trim() : '';
+                    const ani = cells[3]?.v ? String(cells[3].v).trim() : '-'; // Column D
+                    const zile = cells[4]?.v ? String(cells[4].v).trim() : '-'; // Column E
+                    
+                    // Skip header row
+                    if (nume.toLowerCase() === 'nume' || nume.toLowerCase().includes('budo')) continue;
+                    
+                    if (nume && nume.toLowerCase() === TARGET_NAME.toLowerCase()) {
+                        // Found the user!
+                        document.getElementById('aniPractica').textContent = ani;
+                        document.getElementById('zilePeCale').textContent = zile;
+                        return;
+                    }
+                }
+                
+                // User not found
+                document.getElementById('aniPractica').textContent = '-';
+                document.getElementById('zilePeCale').textContent = '-';
+                
+            } catch (error) {
+                console.error('Error fetching Pe Cale data:', error);
+                document.getElementById('aniPractica').textContent = '-';
+                document.getElementById('zilePeCale').textContent = '-';
+            }
+        }
+
+        // Load profile data on page load
+        fetchProfileData();
+        fetchBudopass();
+        fetchDataInscriere();
+        fetchPeCale();
+    </script>
+</body>
+</html>
+

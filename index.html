@@ -1,0 +1,2821 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Prezențe Mirai 2025-2026</title>
+    <link rel="icon" type="image/png" href="Mirai Dojo Logo + JP  CMYK.png">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(220, 38, 38, 0.3);
+            border: 2px solid #dc2626;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header-content {
+            flex: 1;
+            text-align: center;
+        }
+
+        .header-logo {
+            max-width: 150px;
+            height: auto;
+        }
+
+        h1 {
+            color: #ffffff;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(220, 38, 38, 0.5);
+        }
+
+        .subtitle {
+            color: #dc2626;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .last-update {
+            font-size: 0.9em;
+            margin-top: 15px;
+            color: #9ca3af;
+        }
+
+        .sync-btn {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-top: 15px;
+            box-shadow: 0 5px 15px rgba(220, 38, 38, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .sync-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(220, 38, 38, 0.6);
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .sync-btn:active {
+            transform: translateY(0);
+        }
+
+        .sync-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .sync-btn.loading {
+            background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+            cursor: wait;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* Login Section */
+        .login-section {
+            background: linear-gradient(135deg, #1f1f1f 0%, #0a0a0a 100%);
+            border: 2px solid #dc2626;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .form-group-login {
+            margin-bottom: 15px;
+        }
+
+        .form-group-login label {
+            display: block;
+            color: #9ca3af;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-group-login input {
+            width: 100%;
+            padding: 12px;
+            background: #1a1a1a;
+            border: 2px solid #dc2626;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group-login input:focus {
+            outline: none;
+            border-color: #ef4444;
+            box-shadow: 0 0 10px rgba(220, 38, 38, 0.3);
+        }
+
+        .login-action-btn {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(220, 38, 38, 0.4);
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .login-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(220, 38, 38, 0.6);
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .login-action-btn.secondary {
+            background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+            box-shadow: 0 5px 15px rgba(55, 65, 81, 0.4);
+        }
+
+        .login-action-btn.secondary:hover {
+            background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+            box-shadow: 0 7px 20px rgba(55, 65, 81, 0.6);
+        }
+
+        /* Tabs Navigation */
+        .tabs-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #dc2626;
+        }
+
+        .tab-btn {
+            background: linear-gradient(135deg, #1f1f1f 0%, #0a0a0a 100%);
+            color: #9ca3af;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 10px 10px 0 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            border-bottom: none;
+        }
+
+        .tab-btn:hover {
+            color: #dc2626;
+            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+            border-color: #dc2626;
+            border-bottom: none;
+            transform: translateY(2px);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        /* Full Width Card pentru Prezențe */
+        .card-full {
+            background: linear-gradient(135deg, #1f1f1f 0%, #0a0a0a 100%);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            border: 2px solid #dc2626;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+
+        .card-full:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(220, 38, 38, 0.4);
+            border-color: #ef4444;
+        }
+
+        .card-full::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #dc2626 0%, #991b1b 100%);
+        }
+
+        .attendance-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .attendance-stat {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border: 1px solid rgba(220, 38, 38, 0.3);
+        }
+
+        .attendance-stat-label {
+            font-size: 1.1em;
+            color: #9ca3af;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .attendance-stat-value {
+            font-size: 3em;
+            font-weight: bold;
+        }
+
+        /* Accordion pentru grafice lunare */
+        .accordion {
+            margin-top: 30px;
+        }
+
+        .accordion-item {
+            background: linear-gradient(135deg, #1f1f1f 0%, #0a0a0a 100%);
+            border: 2px solid #dc2626;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .accordion-item:hover {
+            border-color: #ef4444;
+            box-shadow: 0 5px 15px rgba(220, 38, 38, 0.3);
+        }
+
+        .accordion-header {
+            padding: 20px 30px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            transition: background 0.3s ease;
+        }
+
+        .accordion-header:hover {
+            background: rgba(220, 38, 38, 0.1);
+        }
+
+        .accordion-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #dc2626;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .accordion-stats {
+            display: flex;
+            gap: 20px;
+            font-size: 0.9em;
+            color: #9ca3af;
+        }
+
+        .accordion-stats span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .accordion-icon {
+            font-size: 1.5em;
+            transition: transform 0.3s ease;
+            color: #dc2626;
+        }
+
+        .accordion-item.active .accordion-icon {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            padding: 0 30px;
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 600px;
+            padding: 20px 30px 30px 30px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        /* Search and Participants List */
+        .search-container {
+            margin-bottom: 30px;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid #dc2626;
+            border-radius: 10px;
+            color: #ffffff;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus {
+            border-color: #ef4444;
+            box-shadow: 0 0 15px rgba(220, 38, 38, 0.3);
+        }
+
+        .search-box::placeholder {
+            color: #6b7280;
+        }
+
+        .participants-table-container {
+            background: linear-gradient(135deg, #1f1f1f 0%, #0a0a0a 100%);
+            border: 2px solid #dc2626;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .participants-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .participants-table thead {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+        }
+
+        .participants-table thead th {
+            padding: 20px;
+            text-align: left;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 1.1em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 3px solid #7f1d1d;
+        }
+
+        .participants-table tbody tr {
+            border-bottom: 1px solid rgba(220, 38, 38, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .participants-table tbody tr:hover {
+            background: rgba(220, 38, 38, 0.1);
+            transform: scale(1.01);
+        }
+
+        .participants-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .participants-table tbody td {
+            padding: 18px 20px;
+            color: #ffffff;
+            font-size: 1em;
+        }
+
+        .participants-table tbody td:first-child {
+            font-weight: bold;
+            color: #dc2626;
+            font-size: 1.1em;
+            width: 120px;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+            font-size: 1.2em;
+        }
+
+        .participants-count {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #9ca3af;
+            font-size: 1.1em;
+        }
+
+        .participants-count strong {
+            color: #dc2626;
+            font-size: 1.3em;
+        }
+
+        /* Seminarii Section */
+        .seminar-section {
+            background: linear-gradient(135deg, #1f1f1f 0%, #0a0a0a 100%);
+            border: 2px solid #dc2626;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .seminar-title {
+            font-size: 1.5em;
+            color: #dc2626;
+            font-weight: bold;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .seminar-date {
+            color: #9ca3af;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+
+        .seminar-stats {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(220, 38, 38, 0.1);
+            border-radius: 10px;
+        }
+
+        .seminar-stat-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ffffff;
+        }
+
+        .seminar-stat-item strong {
+            color: #dc2626;
+            font-size: 1.3em;
+        }
+
+        .seminar-participants-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 10px;
+        }
+
+        .seminar-participant {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px 15px;
+            border-radius: 8px;
+            border-left: 3px solid #10b981;
+            color: #ffffff;
+            transition: all 0.3s ease;
+        }
+
+        .seminar-participant:hover {
+            background: rgba(16, 185, 129, 0.1);
+            transform: translateX(5px);
+        }
+
+        .no-seminars {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+            font-size: 1.2em;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #1f1f1f 0%, #0a0a0a 100%);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            border: 2px solid #dc2626;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(220, 38, 38, 0.4);
+            border-color: #ef4444;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #dc2626 0%, #991b1b 100%);
+        }
+
+        .card-title {
+            font-size: 1.1em;
+            color: #dc2626;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .card-value {
+            font-size: 3em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .card-subtitle {
+            font-size: 0.9em;
+            color: #6b7280;
+        }
+
+        .card-logo {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .card-logo img {
+            max-width: 200px;
+            height: auto;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .card-logo img:hover {
+            opacity: 1;
+        }
+
+        .card-logo-inline {
+            flex-shrink: 0;
+        }
+
+        .card-logo-inline img {
+            max-width: 200px;
+            height: auto;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .card-logo-inline img:hover {
+            opacity: 1;
+        }
+
+        .card-mini-chart {
+            margin-top: 20px;
+            height: 120px;
+            position: relative;
+        }
+
+        .split-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .split-section {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .split-section:first-child {
+            border-right: 2px solid #374151;
+        }
+
+        .split-label {
+            font-size: 0.9em;
+            color: #dc2626;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .split-value {
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+
+        .adults-color {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .children-color {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .cotiz-paid-color {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .cotiz-unpaid-color {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nssm-signed-color {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nssm-unsigned-color {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .adeverinta-valid-color {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .adeverinta-missing-color {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .exam-ready-color {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .exam-notready-color {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .percentage {
+            font-size: 0.8em;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.2em;
+            padding: 50px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(220, 38, 38, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #dc2626;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: linear-gradient(135deg, #1f1f1f 0%, #0a0a0a 100%);
+            color: #dc2626;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(220, 38, 38, 0.3);
+            border: 2px solid #dc2626;
+        }
+
+        .error h3 {
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            color: #ef4444;
+        }
+
+        .error p {
+            color: #d1d5db;
+        }
+
+        .error code {
+            background: #374151;
+            color: #dc2626;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .header-logo {
+                order: 2;
+                margin-top: 15px;
+            }
+
+            .header-content {
+                order: 1;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .tabs-nav {
+                flex-direction: row;
+                overflow-x: auto;
+            }
+
+            .tab-btn {
+                flex: 1;
+                min-width: 120px;
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card-value {
+                font-size: 2.5em;
+            }
+
+            .split-value {
+                font-size: 2em;
+            }
+
+            .attendance-details {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .attendance-stat-value {
+                font-size: 2.5em;
+            }
+
+            .accordion-header {
+                padding: 15px 20px;
+            }
+
+            .accordion-title {
+                font-size: 1.1em;
+            }
+
+            .accordion-stats {
+                flex-direction: column;
+                gap: 5px;
+                font-size: 0.8em;
+            }
+
+            .chart-container {
+                height: 300px;
+                padding: 10px;
+            }
+
+            .participants-table thead th {
+                padding: 15px 10px;
+                font-size: 0.9em;
+            }
+
+            .participants-table tbody td {
+                padding: 12px 10px;
+                font-size: 0.9em;
+            }
+
+            .participants-table tbody td:first-child {
+                font-size: 1em;
+                width: 80px;
+            }
+
+            .seminar-stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .seminar-participants-list {
+                grid-template-columns: 1fr;
+            }
+
+            .seminar-title {
+                font-size: 1.2em;
+            }
+
+            .card-logo-inline img {
+                max-width: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1>🥋 Dashboard Mirai Dojo Aikido Aikikai</h1>
+                <div class="subtitle">Sezonul 2025-2026</div>
+                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 15px;">
+                    <button class="sync-btn" onclick="syncData()" id="syncBtn">
+                        🔄 Sincronizare Date
+                    </button>
+                    <button class="sync-btn" onclick="toggleLogin()" id="loginBtn">
+                        👤 Login Profil
+                    </button>
+                </div>
+                <div class="last-update" id="lastUpdate">Ultima actualizare: Se încarcă...</div>
+            </div>
+            <img src="Mirai Dojo Logo + JP  CMYK.png" alt="Mirai Dojo Logo" class="header-logo">
+        </header>
+
+        <!-- Login Section -->
+        <div id="loginSection" class="login-section" style="display: none;">
+            <div class="login-container">
+                <h3 style="color: #dc2626; margin-bottom: 20px; text-align: center;">🔐 Autentificare Profil</h3>
+                
+                <div class="form-group-login">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" placeholder="Silviu.Ghimposanu">
+                </div>
+                
+                <div class="form-group-login">
+                    <label for="password">Parolă:</label>
+                    <input type="password" id="password" placeholder="123456">
+                </div>
+                
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button class="login-action-btn" onclick="handleLogin()">🔓 Login</button>
+                </div>
+                
+                <div id="loginMessage" style="margin-top: 15px; padding: 10px; border-radius: 8px; text-align: center; display: none;"></div>
+            </div>
+        </div>
+
+        <div id="loadingContainer" class="loading">
+            <div class="spinner"></div>
+            <div>Se încarcă datele...</div>
+        </div>
+
+        <div id="errorContainer" style="display: none;"></div>
+
+        <div id="dashboardContent" style="display: none;">
+            <!-- Tabs Navigation -->
+            <div class="tabs-nav">
+                <button class="tab-btn active" onclick="switchTab('dashboard')">📊 Dashboard</button>
+                <button class="tab-btn" onclick="switchTab('prezente')">📅 Prezențe</button>
+                <button class="tab-btn" onclick="switchTab('participanti')">👥 Participanți</button>
+                <button class="tab-btn" onclick="switchTab('seminarii')">📚 Seminarii</button>
+            </div>
+
+            <!-- Tab 1: Dashboard -->
+            <div id="tab-dashboard" class="tab-content active">
+                <!-- Prima linie: 3 carduri -->
+                <div class="cards-grid">
+                <!-- Total Înscriși -->
+                <div class="card">
+                    <div class="card-title">👥 Total Înscriși</div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 20px;">
+                        <div style="flex: 1;">
+                            <div class="card-value" id="totalInscrisi">-</div>
+                            <div class="card-subtitle">Membri activi în sezonul curent</div>
+                        </div>
+                        <div class="card-logo-inline">
+                            <img src="Mirai Dojo Logo + JP  CMYK.png" alt="Mirai Dojo Logo">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ultimul Antrenament -->
+                <div class="card">
+                    <div class="card-title">📅 Ultimul Antrenament</div>
+                    <div style="text-align: center; padding: 10px 0;">
+                        <div style="font-size: 1.2em; color: #9ca3af; margin-bottom: 15px;" id="ultimulAntrenamentData">Se încarcă...</div>
+                        <div class="split-card">
+                            <div class="split-section">
+                                <div class="split-label">Prezenți</div>
+                                <div class="split-value" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;" id="prezentiUltimul">-</div>
+                            </div>
+                            <div class="split-section">
+                                <div class="split-label">Motivați</div>
+                                <div class="split-value" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;" id="motivatiUltimul">-</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-mini-chart">
+                        <canvas id="chartUltimulAntrenament"></canvas>
+                    </div>
+                </div>
+
+                <!-- Ready for Exam -->
+                <div class="card">
+                    <div class="card-title">🥋 Pregătiri Examen</div>
+                    <div class="split-card">
+                        <div class="split-section">
+                            <div class="split-label">Pregătit</div>
+                            <div class="split-value exam-ready-color" id="readyForExam">-</div>
+                            <div class="percentage" id="percentReadyForExam">-</div>
+                        </div>
+                        <div class="split-section">
+                            <div class="split-label">Nepregătit</div>
+                            <div class="split-value exam-notready-color" id="notReadyForExam">-</div>
+                            <div class="percentage" id="percentNotReadyForExam">-</div>
+                        </div>
+                    </div>
+                    <div class="card-mini-chart">
+                        <canvas id="chartReadyExam"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- A doua linie: 3 carduri -->
+            <div class="cards-grid">
+                <!-- Copii vs Adulți -->
+                <div class="card">
+                    <div class="card-title">👨‍👩‍👧‍👦 Copii vs Adulți</div>
+                    <div class="split-card">
+                        <div class="split-section">
+                            <div class="split-label">Copii</div>
+                            <div class="split-value children-color" id="totalCopii">-</div>
+                            <div class="percentage" id="percentCopii">-</div>
+                        </div>
+                        <div class="split-section">
+                            <div class="split-label">Adulți</div>
+                            <div class="split-value adults-color" id="totalAdulti">-</div>
+                            <div class="percentage" id="percentAdulti">-</div>
+                        </div>
+                    </div>
+                    <div class="card-mini-chart">
+                        <canvas id="chartCopiiAdulti"></canvas>
+                    </div>
+                </div>
+
+                <!-- Cotizație FRAA -->
+                <div class="card" style="cursor: pointer;" onclick="window.location.href='cotizatie.html'">
+                    <div class="card-title">💰 Cotizație Anuală FRAA</div>
+                    <div class="split-card">
+                        <div class="split-section">
+                            <div class="split-label">Plătită</div>
+                            <div class="split-value cotiz-paid-color" id="cotiziePlatita">-</div>
+                            <div class="percentage" id="percentCotiziePlatita">-</div>
+                        </div>
+                        <div class="split-section">
+                            <div class="split-label">Neplătită</div>
+                            <div class="split-value cotiz-unpaid-color" id="cotizieNeplatita">-</div>
+                            <div class="percentage" id="percentCotizieNeplatita">-</div>
+                        </div>
+                    </div>
+                    <div class="card-mini-chart">
+                        <canvas id="chartCotizatie"></canvas>
+                    </div>
+                    <div style="text-align: center; margin-top: 15px; color: #9ca3af; font-size: 0.9em;">
+                        👆 Click pentru detalii
+                    </div>
+                </div>
+
+                <!-- NSSM Semnat vs Nesemnat -->
+                <div class="card">
+                    <div class="card-title">📝 Status NSSM</div>
+                    <div class="split-card">
+                        <div class="split-section">
+                            <div class="split-label">Semnat</div>
+                            <div class="split-value nssm-signed-color" id="nssmSemnat">-</div>
+                            <div class="percentage" id="percentNssmSemnat">-</div>
+                        </div>
+                        <div class="split-section">
+                            <div class="split-label">Nesemnat</div>
+                            <div class="split-value nssm-unsigned-color" id="nssmNesemnat">-</div>
+                            <div class="percentage" id="percentNssmNesemnat">-</div>
+                        </div>
+                    </div>
+                    <div class="card-mini-chart">
+                        <canvas id="chartNSSM"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- A treia linie: 1 card (Adeverință) - va fi pe aceeași linie cu primele 2 -->
+            <div class="cards-grid">
+                <!-- Adeverință Medicală 2026 -->
+                <div class="card">
+                    <div class="card-title">🏥 Adeverință Medicală 2026</div>
+                    <div class="split-card">
+                        <div class="split-section">
+                            <div class="split-label">Valabilă</div>
+                            <div class="split-value adeverinta-valid-color" id="adeverintaValabila">-</div>
+                            <div class="percentage" id="percentAdeverintaValabila">-</div>
+                        </div>
+                        <div class="split-section">
+                            <div class="split-label">Lipsă</div>
+                            <div class="split-value adeverinta-missing-color" id="adeverintaLipsa">-</div>
+                            <div class="percentage" id="percentAdeverintaLipsa">-</div>
+                        </div>
+                    </div>
+                    <div class="card-mini-chart">
+                        <canvas id="chartAdeverinta"></canvas>
+                    </div>
+                </div>
+            </div>
+            </div>
+            
+            <!-- Tab 2: Prezențe -->
+            <div id="tab-prezente" class="tab-content">
+                <!-- Card Full Width - Ultimul Antrenament -->
+                <div class="card-full">
+                    <div class="card-title" style="text-align: center; font-size: 1.5em; margin-bottom: 20px;">📅 Ultimul Antrenament</div>
+                    <div style="text-align: center; font-size: 1.8em; color: #dc2626; font-weight: 600; margin-bottom: 30px;" id="ultimulAntrenamentDataFull">Se încarcă...</div>
+                    
+                    <div class="attendance-details">
+                        <div class="attendance-stat">
+                            <div class="attendance-stat-label">✅ Prezenți</div>
+                            <div class="attendance-stat-value" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;" id="prezentiUltimulFull">-</div>
+                        </div>
+                        <div class="attendance-stat">
+                            <div class="attendance-stat-label">📝 Motivați</div>
+                            <div class="attendance-stat-value" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;" id="motivatiUltimulFull">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grafic Overview Anual -->
+                <div class="card-full" style="margin-top: 30px;">
+                    <div class="card-title" style="text-align: center; font-size: 1.5em; margin-bottom: 20px;">📊 Overview Prezențe Anuale</div>
+                    <div class="chart-container" style="height: 400px;">
+                        <canvas id="yearlyOverviewChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Grafice lunare - Accordion -->
+                <div class="accordion" id="monthlyChartsAccordion">
+                    <!-- Graficele vor fi generate dinamic cu JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Tab 3: Participanți -->
+            <div id="tab-participanti" class="tab-content">
+                <!-- Search Box -->
+                <div class="search-container">
+                    <input type="text" 
+                           class="search-box" 
+                           id="participantSearch" 
+                           placeholder="🔍 Caută participant după nume sau grad..." 
+                           onkeyup="filterParticipants()">
+                </div>
+
+                <!-- Count -->
+                <div class="participants-count" id="participantsCount">
+                    Se încarcă...
+                </div>
+
+                <!-- Participants Table -->
+                <div class="participants-table-container">
+                    <table class="participants-table">
+                        <thead>
+                            <tr>
+                                <th>Grad</th>
+                                <th>Nume</th>
+                                <th>Last Exam</th>
+                                <th>Zile Practică</th>
+                                <th>Ore Practică</th>
+                                <th>Ready for Exam</th>
+                            </tr>
+                        </thead>
+                        <tbody id="participantsTableBody">
+                            <!-- Rândurile vor fi generate dinamic cu JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Tab 4: Seminarii -->
+            <div id="tab-seminarii" class="tab-content">
+                <div id="seminarsContainer">
+                    <!-- Seminariile vor fi generate dinamic cu JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.log('🚀 SCRIPT LOADED - Dashboard Prezente Mirai');
+        
+        // Tab switching function
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active from all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById('tab-' + tabName).classList.add('active');
+            
+            // Activate button
+            event.target.classList.add('active');
+        }
+        
+        // Google Sheets configuration - DOAR sheet-ul trebuie să fie public!
+        const SHEET_ID = '1DZZLXB6rm0lXSqLtMdfFXNRWi9Gh9N8oKbXMM63FwQA';
+        const GID = '1161792968'; // Prezente2026 tab
+        
+        // Folosește Google Visualization API (nu necesită configurare!)
+        async function fetchSheetData() {
+            try {
+                console.log('📥 Încerc să citesc din Google Sheets...');
+                
+                const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${GID}&tqx=out:json`;
+                
+                const response = await fetch(url);
+                const text = await response.text();
+                
+                // Google returnează: google.visualization.Query.setResponse({...});
+                // Trebuie să extragem JSON-ul
+                const jsonMatch = text.match(/google\.visualization\.Query\.setResponse\((.*)\);/s);
+                
+                if (!jsonMatch) {
+                    throw new Error('Format invalid de la Google Sheets');
+                }
+                
+                const jsonData = JSON.parse(jsonMatch[1]);
+                
+                if (jsonData.status === 'error') {
+                    throw new Error('Eroare Google Sheets: ' + (jsonData.errors?.[0]?.detailed_message || 'Unknown error'));
+                }
+                
+                console.log('✅ Date primite de la Google Sheets');
+                
+                // Procesează datele
+                const stats = processGoogleData(jsonData);
+                
+                // Procesează datele lunare pentru grafice
+                const monthlyData = processMonthlyData(jsonData);
+                window.cachedMonthlyData = monthlyData; // Salvează global pentru accordion
+                
+                // Procesează seminariile
+                const seminarsData = processSeminarsData(jsonData);
+                window.cachedSeminarsData = seminarsData;
+                
+                // Creează graficul anual de overview
+                setTimeout(() => createYearlyOverview(monthlyData), 300);
+                
+                // Creează graficele lunare
+                setTimeout(() => createMonthlyCharts(monthlyData), 500);
+                
+                // Afișează seminariile
+                setTimeout(() => displaySeminars(seminarsData), 600);
+                
+                return stats;
+                
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                
+                // Fallback la fișier local pentru development
+                try {
+                    console.log('Încerc fallback la fișierul local...');
+                    const localResponse = await fetch('dashboard_data.json?t=' + new Date().getTime());
+                    if (localResponse.ok) {
+                        const data = await localResponse.json();
+                        console.log('✅ Date încărcate din fișierul local');
+                        return data;
+                    }
+                } catch (e) {
+                    // Ignore
+                }
+                
+                throw error;
+            }
+        }
+        
+        function processGoogleData(jsonData) {
+            const rows = jsonData.table.rows;
+            const cols = jsonData.table.cols;
+            
+            console.log('📋 Processing Google Sheets data...');
+            console.log('Total columns:', cols.length);
+            console.log('Total rows:', rows.length);
+            
+            // Parse PRIMUL RÂND (row 0) pentru a găsi datele de antrenament
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            console.log('📅 Today is:', today.toLocaleDateString('ro-RO'));
+            
+            let lastTrainingColumnIndex = -1;
+            let lastTrainingDate = null;
+            
+            // PRIMUL RÂND conține header-ul cu datele
+            const headerRow = rows[0];
+            if (!headerRow || !headerRow.c) {
+                console.log('⚠️ Nu există primul rând cu header!');
+            } else {
+                console.log('🔍 Scanning first row (header) from column 12 onwards:');
+                
+                // Afișăm primele valori pentru debugging
+                for (let colIndex = 12; colIndex < Math.min(headerRow.c.length, 25); colIndex++) {
+                    const cell = headerRow.c[colIndex];
+                    const cellValue = cell?.v ? String(cell.v) : cell?.f ? String(cell.f) : 'empty';
+                    console.log(`  Column ${colIndex}: "${cellValue}"`);
+                }
+                
+                // Caută ultima dată înainte sau egală cu azi (începând de la coloana 12)
+                for (let colIndex = 12; colIndex < headerRow.c.length; colIndex++) {
+                    const cell = headerRow.c[colIndex];
+                    if (!cell) continue;
+                    
+                    // Verifică dacă această coloană conține "seminar" în orice celulă
+                    let isSeminarColumn = false;
+                    for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+                        const rowCell = rows[rowIndex].c[colIndex];
+                        if (rowCell && rowCell.v) {
+                            const cellText = String(rowCell.v).toLowerCase();
+                            if (cellText.includes('seminar')) {
+                                console.log(`⏭️ Skipping column ${colIndex} - contains "seminar"`);
+                                isSeminarColumn = true;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    if (isSeminarColumn) continue;
+                    
+                    // Încearcă să obții valoarea din celulă
+                    let cellValue = '';
+                    if (cell.v !== null && cell.v !== undefined) {
+                        cellValue = String(cell.v);
+                    } else if (cell.f) {
+                        cellValue = String(cell.f);
+                    }
+                    
+                    if (!cellValue) continue;
+                    
+                    // MULTIPLE formate de dată:
+                    // 1. DD-MMM-YYYY (ex: 06-Jan-2026)
+                    // 2. DD/MM/YYYY (ex: 15/01/2026)
+                    // 3. DD.MM.YYYY (ex: 15.01.2026)
+                    // 4. YYYY-MM-DD (ex: 2026-01-15)
+                    // 5. Date(2026, 0, 15) - Google Sheets serial number
+                    
+                    let columnDate = null;
+                    let dateMatch = null;
+                    
+                    // Format 1: DD-MMM-YYYY
+                    dateMatch = cellValue.match(/(\d{1,2})-(\w{3})-(\d{4})/);
+                    if (dateMatch) {
+                        const [_, day, monthStr, year] = dateMatch;
+                        const monthMap = {
+                            'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
+                            'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11,
+                            'ian': 0, 'feb': 1, 'mar': 2, 'apr': 3, 'mai': 4, 'iun': 5,
+                            'iul': 6, 'aug': 7, 'sep': 8, 'oct': 9, 'nov': 10, 'dec': 11
+                        };
+                        const month = monthMap[monthStr];
+                        if (month !== undefined) {
+                            columnDate = new Date(parseInt(year), month, parseInt(day));
+                        }
+                    }
+                    
+                    // Format 2: DD/MM/YYYY
+                    if (!columnDate) {
+                        dateMatch = cellValue.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+                        if (dateMatch) {
+                            const [_, day, month, year] = dateMatch;
+                            columnDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+                        }
+                    }
+                    
+                    // Format 3: DD.MM.YYYY
+                    if (!columnDate) {
+                        dateMatch = cellValue.match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);
+                        if (dateMatch) {
+                            const [_, day, month, year] = dateMatch;
+                            columnDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+                        }
+                    }
+                    
+                    // Format 4: YYYY-MM-DD
+                    if (!columnDate) {
+                        dateMatch = cellValue.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
+                        if (dateMatch) {
+                            const [_, year, month, day] = dateMatch;
+                            columnDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+                        }
+                    }
+                    
+                    // Format 5: Date(YYYY, M, D) - Google Sheets date formula
+                    if (!columnDate) {
+                        dateMatch = cellValue.match(/Date\((\d{4}),\s*(\d{1,2}),\s*(\d{1,2})\)/);
+                        if (dateMatch) {
+                            const [_, year, month, day] = dateMatch;
+                            columnDate = new Date(parseInt(year), parseInt(month), parseInt(day));
+                        }
+                    }
+                    
+                    if (columnDate) {
+                        columnDate.setHours(0, 0, 0, 0);
+                        
+                        console.log(`✅ Found date in column ${colIndex}: ${cellValue} = ${columnDate.toLocaleDateString('ro-RO')}`);
+                        
+                        // Verifică dacă data e înainte sau egală cu azi (nu în viitor!)
+                        if (columnDate <= today) {
+                            // Păstrează cea mai RECENTĂ dată (ultima înainte de azi)
+                            if (!lastTrainingDate || columnDate > lastTrainingDate) {
+                                lastTrainingDate = columnDate;
+                                lastTrainingColumnIndex = colIndex;
+                                console.log(`🎯 NEW last training: ${columnDate.toLocaleDateString('ro-RO')} at column ${colIndex}`);
+                            }
+                        } else {
+                            console.log(`⏭️ Skipping future date: ${columnDate.toLocaleDateString('ro-RO')}`);
+                        }
+                    }
+                }
+            }
+            
+            if (lastTrainingDate) {
+                console.log(`✅ Ultimul antrenament: ${lastTrainingDate.toLocaleDateString('ro-RO')} (coloana ${lastTrainingColumnIndex})`);
+            } else {
+                console.log('⚠️  Nu s-a găsit nicio dată de antrenament înainte de azi');
+            }
+            
+            let totalInscrisi = 0;
+            let totalCopii = 0;
+            let totalAdulti = 0;
+            let cotiziePlatita = 0;
+            let cotizieNeplatita = 0;
+            let nssmSemnat = 0;
+            let nssmNesemnat = 0;
+            let adeverintaValabila = 0;
+            let adeverintaLipsa = 0;
+            let readyForExam = 0;
+            let notReadyForExam = 0;
+            let prezentiUltimulAntrenament = 0;
+            let motivatiUltimulAntrenament = 0;
+            const participanti = [];
+
+            // Start from row 1 (row 0 is the header with dates)
+            // Rândul 0 = header cu date, rândul 1 = primul participant
+            console.log('📝 Processing participants starting from row 1...');
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                const cells = row.c;
+                
+                // A=Grad, B=Nume, C=Cotiz, D=NSSM, E=Adeverință, H=Zile Practica, I=Ore Practica, K=Last Exam, L=Ready for Exam
+                const grad = cells[0]?.v ? String(cells[0].v).trim() : '';
+                const nume = cells[1]?.v ? String(cells[1].v).trim() : '';
+                const cotiz = cells[2]?.v ? String(cells[2].v).trim().toUpperCase() : '';
+                const nssm = cells[3]?.v ? String(cells[3].v).trim().toUpperCase() : '';
+                const adeverinta = cells[4]?.v ? String(cells[4].v).trim().toUpperCase() : '';
+                const zilePractica = cells[7]?.v ? String(cells[7].v).trim() : ''; // Coloana H (index 7)
+                const orePractica = cells[8]?.v ? String(cells[8].v).trim() : ''; // Coloana I (index 8)
+                const lastExam = cells[10]?.v ? String(cells[10].v).trim() : ''; // Coloana K (index 10)
+                const readyExam = cells[11]?.v ? String(cells[11].v).trim().toUpperCase() : ''; // Coloana L (index 11)
+                
+                // Verifică prezența la ultimul antrenament
+                let lastTrainingStatus = '';
+                if (lastTrainingColumnIndex !== -1 && cells[lastTrainingColumnIndex]) {
+                    lastTrainingStatus = cells[lastTrainingColumnIndex].v ? String(cells[lastTrainingColumnIndex].v).trim().toUpperCase() : '';
+                }
+                
+                // Oprește când găsești "Prezenti"
+                if (nume.toLowerCase().includes('prezent')) {
+                    console.log(`✋ Am găsit "Prezenti" la rândul ${i + 1} - stop`);
+                    break;
+                }
+                
+                // Ignoră rândurile goale
+                if (nume === '' || grad === '') {
+                    continue;
+                }
+                
+                totalInscrisi++;
+                
+                let categorie = 'Necunoscut';
+                if (grad.startsWith('C') || grad.startsWith('c')) {
+                    totalCopii++;
+                    categorie = 'Copil';
+                } else if (grad.startsWith('A') || grad.startsWith('a')) {
+                    totalAdulti++;
+                    categorie = 'Adult';
+                }
+                
+                // Status Cotizație
+                let cotizStatus = 'Necunoscut';
+                if (cotiz === 'Y') {
+                    cotiziePlatita++;
+                    cotizStatus = 'Plătită';
+                } else if (cotiz === 'N') {
+                    cotizieNeplatita++;
+                    cotizStatus = 'Neplătită';
+                }
+                
+                // Status NSSM
+                let nssmStatus = 'Necunoscut';
+                if (nssm === 'Y') {
+                    nssmSemnat++;
+                    nssmStatus = 'Semnat';
+                } else if (nssm === 'N') {
+                    nssmNesemnat++;
+                    nssmStatus = 'Nesemnat';
+                }
+
+                // Status Adeverință
+                let adeverintaStatus = 'Necunoscut';
+                if (adeverinta === 'Y') {
+                    adeverintaValabila++;
+                    adeverintaStatus = 'Valabilă';
+                } else if (adeverinta === 'N') {
+                    adeverintaLipsa++;
+                    adeverintaStatus = 'Lipsă';
+                }
+
+                // Status Ready for Exam
+                let readyExamStatus = 'Necunoscut';
+                if (readyExam === 'Y') {
+                    readyForExam++;
+                    readyExamStatus = 'Pregătit';
+                } else if (readyExam === 'N') {
+                    notReadyForExam++;
+                    readyExamStatus = 'Nepregătit';
+                }
+
+                // Status Prezență ultimul antrenament
+                let lastTrainingStatusText = 'Absent';
+                if (lastTrainingStatus === 'P') {
+                    prezentiUltimulAntrenament++;
+                    lastTrainingStatusText = 'Prezent';
+                } else if (lastTrainingStatus === 'M') {
+                    motivatiUltimulAntrenament++;
+                    lastTrainingStatusText = 'Motivat';
+                }
+
+                participanti.push({
+                    grad: grad,
+                    nume: nume,
+                    categorie: categorie,
+                    cotiz: cotiz,
+                    cotizStatus: cotizStatus,
+                    nssm: nssm,
+                    nssmStatus: nssmStatus,
+                    adeverinta: adeverinta,
+                    adeverintaStatus: adeverintaStatus,
+                    zilePractica: zilePractica,
+                    orePractica: orePractica,
+                    lastExam: lastExam,
+                    readyExam: readyExam,
+                    readyExamStatus: readyExamStatus,
+                    lastTraining: lastTrainingStatus,
+                    lastTrainingStatus: lastTrainingStatusText
+                });
+            }
+            
+            console.log(`\n=== REZULTATE ===`);
+            console.log(`✅ Total înscriși: ${totalInscrisi}`);
+            console.log(`👶 Copii: ${totalCopii}`);
+            console.log(`👨 Adulți: ${totalAdulti}`);
+            console.log(`💰 Cotizație Plătită: ${cotiziePlatita}`);
+            console.log(`⏳ Cotizație Neplătită: ${cotizieNeplatita}`);
+            console.log(`📝 NSSM Semnat: ${nssmSemnat}`);
+            console.log(`⏳ NSSM Nesemnat: ${nssmNesemnat}`);
+            console.log(`🏥 Adeverință Valabilă: ${adeverintaValabila}`);
+            console.log(`⚠️  Adeverință Lipsă: ${adeverintaLipsa}`);
+            console.log(`✅ Pregătiți Examen: ${readyForExam}`);
+            console.log(`❌ Nepregătiți Examen: ${notReadyForExam}`);
+            if (lastTrainingDate) {
+                console.log(`\n📅 Ultimul antrenament: ${lastTrainingDate.toLocaleDateString('ro-RO')}`);
+                console.log(`✅ Prezenți (P): ${prezentiUltimulAntrenament}`);
+                console.log(`📝 Motivați (M): ${motivatiUltimulAntrenament}`);
+            }
+            
+            return {
+                totalInscrisi: totalInscrisi,
+                totalCopii: totalCopii,
+                totalAdulti: totalAdulti,
+                cotiziePlatita: cotiziePlatita,
+                cotizieNeplatita: cotizieNeplatita,
+                nssmSemnat: nssmSemnat,
+                nssmNesemnat: nssmNesemnat,
+                adeverintaValabila: adeverintaValabila,
+                adeverintaLipsa: adeverintaLipsa,
+                readyForExam: readyForExam,
+                notReadyForExam: notReadyForExam,
+                prezentiUltimulAntrenament: prezentiUltimulAntrenament,
+                motivatiUltimulAntrenament: motivatiUltimulAntrenament,
+                lastTrainingDate: lastTrainingDate ? lastTrainingDate.toISOString() : null,
+                percentCopii: totalInscrisi > 0 ? ((totalCopii / totalInscrisi) * 100).toFixed(1) : 0,
+                percentAdulti: totalInscrisi > 0 ? ((totalAdulti / totalInscrisi) * 100).toFixed(1) : 0,
+                percentCotiziePlatita: totalInscrisi > 0 ? ((cotiziePlatita / totalInscrisi) * 100).toFixed(1) : 0,
+                percentCotizieNeplatita: totalInscrisi > 0 ? ((cotizieNeplatita / totalInscrisi) * 100).toFixed(1) : 0,
+                percentNssmSemnat: totalInscrisi > 0 ? ((nssmSemnat / totalInscrisi) * 100).toFixed(1) : 0,
+                percentNssmNesemnat: totalInscrisi > 0 ? ((nssmNesemnat / totalInscrisi) * 100).toFixed(1) : 0,
+                percentAdeverintaValabila: totalInscrisi > 0 ? ((adeverintaValabila / totalInscrisi) * 100).toFixed(1) : 0,
+                percentAdeverintaLipsa: totalInscrisi > 0 ? ((adeverintaLipsa / totalInscrisi) * 100).toFixed(1) : 0,
+                percentReadyForExam: totalInscrisi > 0 ? ((readyForExam / totalInscrisi) * 100).toFixed(1) : 0,
+                percentNotReadyForExam: totalInscrisi > 0 ? ((notReadyForExam / totalInscrisi) * 100).toFixed(1) : 0,
+                percentPrezentiUltimul: totalInscrisi > 0 ? ((prezentiUltimulAntrenament / totalInscrisi) * 100).toFixed(1) : 0,
+                lastUpdate: new Date().toISOString(),
+                participanti: participanti,
+                monthlyData: null  // Va fi populat separat
+            };
+        }
+
+        // Procesare date lunare pentru grafice
+        function processMonthlyData(jsonData) {
+            console.log('📊 Processing monthly attendance data...');
+            
+            const rows = jsonData.table.rows;
+            const headerRow = rows[0];
+            
+            if (!headerRow || !headerRow.c) {
+                console.log('⚠️ No header row found');
+                return {};
+            }
+            
+            const monthlyData = {};
+            const monthNames = ['ian', 'feb', 'mar', 'apr', 'mai', 'iun', 'iul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+            const monthNamesRo = ['Ianuarie', 'Februarie', 'Martie', 'Aprilie', 'Mai', 'Iunie', 'Iulie', 'August', 'Septembrie', 'Octombrie', 'Noiembrie', 'Decembrie'];
+            
+            // Grupează coloanele pe luni
+            for (let colIndex = 12; colIndex < headerRow.c.length; colIndex++) {
+                const cell = headerRow.c[colIndex];
+                if (!cell) continue;
+                
+                // Verifică dacă această coloană conține "seminar" în orice celulă
+                let isSeminarColumn = false;
+                for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+                    const rowCell = rows[rowIndex].c[colIndex];
+                    if (rowCell && rowCell.v) {
+                        const cellText = String(rowCell.v).toLowerCase();
+                        if (cellText.includes('seminar')) {
+                            isSeminarColumn = true;
+                            break;
+                        }
+                    }
+                }
+                
+                if (isSeminarColumn) continue;
+                
+                let cellValue = '';
+                if (cell.v !== null && cell.v !== undefined) {
+                    cellValue = String(cell.v);
+                } else if (cell.f) {
+                    cellValue = String(cell.f);
+                }
+                
+                if (!cellValue) continue;
+                
+                // Caută data în formatul DD/MM/YYYY sau alte formate
+                let columnDate = null;
+                let dateMatch = null;
+                
+                // Format 1: DD/MM/YYYY
+                dateMatch = cellValue.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+                if (dateMatch) {
+                    const [_, day, month, year] = dateMatch;
+                    columnDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+                }
+                
+                // Format 2: DD.MM.YYYY
+                if (!columnDate) {
+                    dateMatch = cellValue.match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);
+                    if (dateMatch) {
+                        const [_, day, month, year] = dateMatch;
+                        columnDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+                    }
+                }
+                
+                // Format 3: DD-MMM-YYYY
+                if (!columnDate) {
+                    dateMatch = cellValue.match(/(\d{1,2})-(\w{3})-(\d{4})/);
+                    if (dateMatch) {
+                        const [_, day, monthStr, year] = dateMatch;
+                        const monthMap = {
+                            'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
+                            'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11,
+                            'ian': 0, 'feb': 1, 'mar': 2, 'apr': 3, 'mai': 4, 'iun': 5,
+                            'iul': 6, 'aug': 7, 'sep': 8, 'oct': 9, 'nov': 10, 'dec': 11
+                        };
+                        const month = monthMap[monthStr];
+                        if (month !== undefined) {
+                            columnDate = new Date(parseInt(year), month, parseInt(day));
+                        }
+                    }
+                }
+                
+                if (columnDate) {
+                    const month = columnDate.getMonth(); // 0-11
+                    const monthKey = monthNames[month];
+                    const monthNameRo = monthNamesRo[month];
+                    
+                    if (!monthlyData[monthKey]) {
+                        monthlyData[monthKey] = {
+                            name: monthNameRo,
+                            month: month,
+                            dates: [],
+                            data: [] // Array de { date, prezenti, motivati, absenti }
+                        };
+                    }
+                    
+                    // Procesează prezențele pentru această dată
+                    let prezenti = 0;
+                    let motivati = 0;
+                    let absenti = 0;
+                    
+                    // Parcurge toți participanții (start from row 1, skip header)
+                    for (let rowIndex = 1; rowIndex < rows.length; rowIndex++) {
+                        const row = rows[rowIndex];
+                        const cells = row.c;
+                        
+                        const nume = cells[1]?.v ? String(cells[1].v).trim() : '';
+                        
+                        // Oprește la "Prezenti"
+                        if (nume.toLowerCase().includes('prezent')) break;
+                        if (nume === '') continue;
+                        
+                        // Verifică prezența pentru această coloană
+                        const attendance = cells[colIndex]?.v ? String(cells[colIndex].v).trim().toUpperCase() : '';
+                        
+                        if (attendance === 'P') {
+                            prezenti++;
+                        } else if (attendance === 'M') {
+                            motivati++;
+                        } else {
+                            absenti++;
+                        }
+                    }
+                    
+                    monthlyData[monthKey].dates.push(columnDate);
+                    monthlyData[monthKey].data.push({
+                        date: columnDate.toLocaleDateString('ro-RO', { day: '2-digit', month: '2-digit' }),
+                        prezenti: prezenti,
+                        motivati: motivati,
+                        absenti: absenti
+                    });
+                }
+            }
+            
+            console.log('📊 Monthly data processed:', Object.keys(monthlyData));
+            return monthlyData;
+        }
+
+        // Procesare seminarii
+        function processSeminarsData(jsonData) {
+            console.log('📚 Processing seminars data...');
+            
+            const rows = jsonData.table.rows;
+            
+            if (!rows || rows.length === 0) {
+                console.log('⚠️ No rows found');
+                return [];
+            }
+            
+            const seminars = [];
+            
+            // Caută coloane cu "Seminar" - scanează primele 5 rânduri din fiecare coloană
+            for (let colIndex = 12; colIndex < rows[0].c.length; colIndex++) {
+                let seminarTitle = null;
+                let seminarRowIndex = -1;
+                
+                // Scanează primele 5 rânduri pentru a găsi "Seminar"
+                for (let rowIndex = 0; rowIndex < Math.min(rows.length, 5); rowIndex++) {
+                    const row = rows[rowIndex];
+                    if (!row || !row.c) continue;
+                    
+                    const cell = row.c[colIndex];
+                    if (!cell || !cell.v) continue;
+                    
+                    const cellValue = String(cell.v);
+                    
+                    // Verifică dacă conține "seminar" (case insensitive)
+                    if (cellValue.toLowerCase().includes('seminar')) {
+                        seminarTitle = cellValue;
+                        seminarRowIndex = rowIndex;
+                        console.log(`✅ Found seminar "${seminarTitle}" in column ${colIndex}, row ${rowIndex}`);
+                        break;
+                    }
+                }
+                
+                // Dacă am găsit un seminar, procesează participanții
+                if (seminarTitle) {
+                    const participants = [];
+                    
+                    // Începe DUPĂ rândul cu seminarul și caută participanții
+                    for (let rowIndex = seminarRowIndex + 1; rowIndex < rows.length; rowIndex++) {
+                        const row = rows[rowIndex];
+                        if (!row || !row.c) continue;
+                        
+                        const cells = row.c;
+                        const nume = cells[1]?.v ? String(cells[1].v).trim() : '';
+                        const grad = cells[0]?.v ? String(cells[0].v).trim() : '';
+                        
+                        // Oprește la "Prezenti"
+                        if (nume.toLowerCase().includes('prezent')) break;
+                        
+                        // Ignoră rânduri goale
+                        if (nume === '' || grad === '') continue;
+                        
+                        // Verifică dacă celula are valoare care ÎNCEPE cu "S"
+                        const cell = cells[colIndex];
+                        if (cell && cell.v !== null && cell.v !== undefined) {
+                            const cellValue = String(cell.v).trim().toUpperCase();
+                            // Verifică dacă începe cu "S"
+                            if (cellValue.startsWith('S')) {
+                                participants.push({
+                                    nume: nume,
+                                    grad: grad
+                                });
+                            }
+                        }
+                    }
+                    
+                    console.log(`  📊 "${seminarTitle}" -> ${participants.length} participants (with S)`);
+                    
+                    seminars.push({
+                        title: seminarTitle,
+                        columnIndex: colIndex,
+                        participants: participants,
+                        totalParticipants: participants.length
+                    });
+                }
+            }
+            
+            console.log(`📚 Total seminars found: ${seminars.length}`);
+            return seminars;
+        }
+
+        function updateDashboard(stats) {
+            console.log('🔄 updateDashboard called');
+            console.log('📊 Full stats object:', JSON.stringify(stats, null, 2));
+            
+            document.getElementById('totalInscrisi').textContent = stats.totalInscrisi;
+            document.getElementById('totalCopii').textContent = stats.totalCopii;
+            document.getElementById('totalAdulti').textContent = stats.totalAdulti;
+            document.getElementById('percentCopii').textContent = `${stats.percentCopii}%`;
+            document.getElementById('percentAdulti').textContent = `${stats.percentAdulti}%`;
+            
+            // Ultimul antrenament - cu logging detaliat
+            console.log('📅 Checking lastTrainingDate...');
+            console.log('   lastTrainingDate value:', stats.lastTrainingDate);
+            console.log('   prezentiUltimulAntrenament value:', stats.prezentiUltimulAntrenament);
+            console.log('   motivatiUltimulAntrenament value:', stats.motivatiUltimulAntrenament);
+            
+            const dataElement = document.getElementById('ultimulAntrenamentData');
+            const prezentiElement = document.getElementById('prezentiUltimul');
+            const motivatiElement = document.getElementById('motivatiUltimul');
+            
+            console.log('   Elements found:', {
+                dataElement: !!dataElement,
+                prezentiElement: !!prezentiElement,
+                motivatiElement: !!motivatiElement
+            });
+            
+            if (stats.lastTrainingDate) {
+                const trainingDate = new Date(stats.lastTrainingDate);
+                const dateStr = trainingDate.toLocaleDateString('ro-RO', { 
+                    day: '2-digit', 
+                    month: 'long', 
+                    year: 'numeric' 
+                });
+                
+                console.log('   Setting date to:', dateStr);
+                dataElement.textContent = dateStr;
+                
+                console.log('   Setting prezenti to:', stats.prezentiUltimulAntrenament);
+                prezentiElement.textContent = stats.prezentiUltimulAntrenament || 0;
+                
+                console.log('   Setting motivati to:', stats.motivatiUltimulAntrenament);
+                motivatiElement.textContent = stats.motivatiUltimulAntrenament || 0;
+                
+                // Update tab Prezențe - card full width
+                document.getElementById('ultimulAntrenamentDataFull').textContent = dateStr;
+                document.getElementById('prezentiUltimulFull').textContent = stats.prezentiUltimulAntrenament || 0;
+                document.getElementById('motivatiUltimulFull').textContent = stats.motivatiUltimulAntrenament || 0;
+                
+                console.log('✅ Ultimul antrenament actualizat în UI');
+            } else {
+                console.log('⚠️  lastTrainingDate is null/undefined');
+                dataElement.textContent = 'Niciun antrenament recent';
+                prezentiElement.textContent = '-';
+                motivatiElement.textContent = '-';
+                
+                // Update tab Prezențe
+                document.getElementById('ultimulAntrenamentDataFull').textContent = 'Niciun antrenament recent';
+                document.getElementById('prezentiUltimulFull').textContent = '-';
+                document.getElementById('motivatiUltimulFull').textContent = '-';
+            }
+            
+            document.getElementById('cotiziePlatita').textContent = stats.cotiziePlatita || 0;
+            document.getElementById('cotizieNeplatita').textContent = stats.cotizieNeplatita || 0;
+            document.getElementById('percentCotiziePlatita').textContent = `${stats.percentCotiziePlatita || 0}%`;
+            document.getElementById('percentCotizieNeplatita').textContent = `${stats.percentCotizieNeplatita || 0}%`;
+            
+            document.getElementById('nssmSemnat').textContent = stats.nssmSemnat || 0;
+            document.getElementById('nssmNesemnat').textContent = stats.nssmNesemnat || 0;
+            document.getElementById('percentNssmSemnat').textContent = `${stats.percentNssmSemnat || 0}%`;
+            document.getElementById('percentNssmNesemnat').textContent = `${stats.percentNssmNesemnat || 0}%`;
+            
+            document.getElementById('adeverintaValabila').textContent = stats.adeverintaValabila || 0;
+            document.getElementById('adeverintaLipsa').textContent = stats.adeverintaLipsa || 0;
+            document.getElementById('percentAdeverintaValabila').textContent = `${stats.percentAdeverintaValabila || 0}%`;
+            document.getElementById('percentAdeverintaLipsa').textContent = `${stats.percentAdeverintaLipsa || 0}%`;
+            
+            document.getElementById('readyForExam').textContent = stats.readyForExam || 0;
+            document.getElementById('notReadyForExam').textContent = stats.notReadyForExam || 0;
+            document.getElementById('percentReadyForExam').textContent = `${stats.percentReadyForExam || 0}%`;
+            document.getElementById('percentNotReadyForExam').textContent = `${stats.percentNotReadyForExam || 0}%`;
+            
+            // Update participants list
+            if (stats.participanti && stats.participanti.length > 0) {
+                displayParticipants(stats.participanti);
+            }
+            
+            // Create mini charts
+            createMiniCharts(stats);
+            
+            console.log('✅ updateDashboard completed');
+        }
+
+        // Create mini charts for dashboard cards
+        let miniCharts = {};
+        
+        function createMiniCharts(stats) {
+            // Destroy existing charts
+            Object.values(miniCharts).forEach(chart => chart.destroy());
+            miniCharts = {};
+            
+            // Chart: Ultimul Antrenament
+            const ctxUltimul = document.getElementById('chartUltimulAntrenament');
+            if (ctxUltimul && stats.prezentiUltimulAntrenament > 0) {
+                miniCharts.ultimulAntrenament = new Chart(ctxUltimul, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Prezenți', 'Motivați'],
+                        datasets: [{
+                            data: [stats.prezentiUltimulAntrenament, stats.motivatiUltimulAntrenament],
+                            backgroundColor: ['rgba(16, 185, 129, 0.8)', 'rgba(245, 158, 11, 0.8)'],
+                            borderColor: ['rgba(5, 150, 105, 1)', 'rgba(217, 119, 6, 1)'],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            datalabels: { display: false }
+                        }
+                    }
+                });
+            }
+            
+            // Chart: Copii vs Adulți
+            const ctxCopii = document.getElementById('chartCopiiAdulti');
+            if (ctxCopii) {
+                miniCharts.copiiAdulti = new Chart(ctxCopii, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Copii', 'Adulți'],
+                        datasets: [{
+                            data: [stats.totalCopii, stats.totalAdulti],
+                            backgroundColor: ['rgba(59, 130, 246, 0.8)', 'rgba(239, 68, 68, 0.8)'],
+                            borderColor: ['rgba(37, 99, 235, 1)', 'rgba(220, 38, 38, 1)'],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            datalabels: { display: false }
+                        }
+                    }
+                });
+            }
+            
+            // Chart: Cotizație
+            const ctxCotizatie = document.getElementById('chartCotizatie');
+            if (ctxCotizatie) {
+                miniCharts.cotizatie = new Chart(ctxCotizatie, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Plătită', 'Neplătită'],
+                        datasets: [{
+                            data: [stats.cotiziePlatita, stats.cotizieNeplatita],
+                            backgroundColor: ['rgba(16, 185, 129, 0.8)', 'rgba(245, 158, 11, 0.8)'],
+                            borderColor: ['rgba(5, 150, 105, 1)', 'rgba(217, 119, 6, 1)'],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            datalabels: { display: false }
+                        }
+                    }
+                });
+            }
+            
+            // Chart: NSSM
+            const ctxNSSM = document.getElementById('chartNSSM');
+            if (ctxNSSM) {
+                miniCharts.nssm = new Chart(ctxNSSM, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Semnat', 'Nesemnat'],
+                        datasets: [{
+                            data: [stats.nssmSemnat, stats.nssmNesemnat],
+                            backgroundColor: ['rgba(16, 185, 129, 0.8)', 'rgba(239, 68, 68, 0.8)'],
+                            borderColor: ['rgba(5, 150, 105, 1)', 'rgba(220, 38, 38, 1)'],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            datalabels: { display: false }
+                        }
+                    }
+                });
+            }
+            
+            // Chart: Adeverință
+            const ctxAdeverinta = document.getElementById('chartAdeverinta');
+            if (ctxAdeverinta) {
+                miniCharts.adeverinta = new Chart(ctxAdeverinta, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Valabilă', 'Lipsă'],
+                        datasets: [{
+                            data: [stats.adeverintaValabila, stats.adeverintaLipsa],
+                            backgroundColor: ['rgba(16, 185, 129, 0.8)', 'rgba(239, 68, 68, 0.8)'],
+                            borderColor: ['rgba(5, 150, 105, 1)', 'rgba(220, 38, 38, 1)'],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            datalabels: { display: false }
+                        }
+                    }
+                });
+            }
+            
+            // Chart: Ready for Exam
+            const ctxReadyExam = document.getElementById('chartReadyExam');
+            if (ctxReadyExam) {
+                miniCharts.readyExam = new Chart(ctxReadyExam, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Pregătit', 'Nepregătit'],
+                        datasets: [{
+                            data: [stats.readyForExam, stats.notReadyForExam],
+                            backgroundColor: ['rgba(16, 185, 129, 0.8)', 'rgba(245, 158, 11, 0.8)'],
+                            borderColor: ['rgba(5, 150, 105, 1)', 'rgba(217, 119, 6, 1)'],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            datalabels: { display: false }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Participants list management
+        let allParticipants = [];
+        
+        function displayParticipants(participants) {
+            console.log('👥 Displaying participants:', participants.length);
+            
+            // Păstrează ordinea EXACTĂ din sheet (nu sortează)
+            allParticipants = participants;
+            
+            updateParticipantsTable(allParticipants);
+        }
+        
+        function updateParticipantsTable(participants) {
+            const tableBody = document.getElementById('participantsTableBody');
+            const countContainer = document.getElementById('participantsCount');
+            
+            if (participants.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="6" class="no-results">📭 Nu au fost găsiți participanți</td></tr>';
+                countContainer.innerHTML = '<strong>0</strong> participanți';
+                return;
+            }
+            
+            // Update count
+            countContainer.innerHTML = `<strong>${participants.length}</strong> participanți`;
+            
+            // Helper function to format date
+            function formatLastExam(dateStr) {
+                if (!dateStr || dateStr === '-') return '-';
+                
+                // Încearcă să parseze data
+                let date = null;
+                
+                // Format Date(YYYY, M, D) - Google Sheets format
+                const matchGS = dateStr.match(/Date\((\d{4}),\s*(\d{1,2}),\s*(\d{1,2})\)/);
+                if (matchGS) {
+                    date = new Date(parseInt(matchGS[1]), parseInt(matchGS[2]), parseInt(matchGS[3]));
+                }
+                
+                // Format DD/MM/YYYY
+                if (!date) {
+                    const match1 = dateStr.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+                    if (match1) {
+                        date = new Date(parseInt(match1[3]), parseInt(match1[2]) - 1, parseInt(match1[1]));
+                    }
+                }
+                
+                // Format DD.MM.YYYY
+                if (!date) {
+                    const match2 = dateStr.match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);
+                    if (match2) {
+                        date = new Date(parseInt(match2[3]), parseInt(match2[2]) - 1, parseInt(match2[1]));
+                    }
+                }
+                
+                // Format DD-MM-YYYY
+                if (!date) {
+                    const match3 = dateStr.match(/(\d{1,2})-(\d{1,2})-(\d{4})/);
+                    if (match3) {
+                        date = new Date(parseInt(match3[3]), parseInt(match3[2]) - 1, parseInt(match3[1]));
+                    }
+                }
+                
+                if (date && !isNaN(date.getTime())) {
+                    const day = date.getDate();
+                    const monthNames = ['ian', 'feb', 'mar', 'apr', 'mai', 'iun', 'iul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+                    const month = monthNames[date.getMonth()];
+                    const year = date.getFullYear();
+                    return `${day} - ${month} ${year}`;
+                }
+                
+                // Dacă nu e o dată validă, returnează textul original
+                return dateStr;
+            }
+            
+            // Helper function to format Ready for Exam
+            function formatReadyForExam(value) {
+                if (value === 'Y') return '<span style="color: #10b981; font-weight: bold;">✓ Yes</span>';
+                if (value === 'N') return '<span style="color: #ef4444; font-weight: bold;">✗ No</span>';
+                return '-';
+            }
+            
+            // Generate table rows
+            tableBody.innerHTML = participants.map(p => `
+                <tr>
+                    <td>${p.grad}</td>
+                    <td>${p.nume}</td>
+                    <td>${formatLastExam(p.lastExam)}</td>
+                    <td>${p.zilePractica || '-'}</td>
+                    <td>${p.orePractica || '-'}</td>
+                    <td>${formatReadyForExam(p.readyExam)}</td>
+                </tr>
+            `).join('');
+        }
+        
+        function filterParticipants() {
+            const searchTerm = document.getElementById('participantSearch').value.toLowerCase().trim();
+            
+            if (!searchTerm) {
+                updateParticipantsTable(allParticipants);
+                return;
+            }
+            
+            const filtered = allParticipants.filter(p => {
+                return p.nume.toLowerCase().includes(searchTerm) || 
+                       p.grad.toLowerCase().includes(searchTerm) ||
+                       p.categorie.toLowerCase().includes(searchTerm);
+            });
+            
+            updateParticipantsTable(filtered);
+        }
+
+        // Seminars display
+        function displaySeminars(seminars) {
+            console.log('📚 Displaying seminars:', seminars.length);
+            
+            const container = document.getElementById('seminarsContainer');
+            
+            if (seminars.length === 0) {
+                container.innerHTML = '<div class="no-seminars">📚 Nu au fost găsite seminarii</div>';
+                return;
+            }
+            
+            container.innerHTML = seminars.map(seminar => `
+                <div class="seminar-section">
+                    <div class="seminar-title">
+                        📚 ${seminar.title}
+                    </div>
+                    <div class="seminar-stats">
+                        <div class="seminar-stat-item">
+                            <span>👥 Total prezenți:</span>
+                            <strong>${seminar.totalParticipants}</strong>
+                        </div>
+                    </div>
+                    ${seminar.participants.length > 0 ? `
+                        <div class="seminar-participants-list">
+                            ${seminar.participants.map(p => `
+                                <div class="seminar-participant">
+                                    <strong>${p.grad}</strong> - ${p.nume}
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : '<div style="color: #6b7280; text-align: center; padding: 20px;">Nu au fost participanți prezenți</div>'}
+                </div>
+            `).join('');
+        }
+
+        // Creează grafice lunare
+        let monthlyCharts = {};
+        let yearlyOverviewChart = null;
+        
+        function createYearlyOverview(monthlyData) {
+            console.log('📊 Creating yearly overview chart...');
+            
+            const ctx = document.getElementById('yearlyOverviewChart');
+            if (!ctx) return;
+            
+            // Distruge graficul existent
+            if (yearlyOverviewChart) {
+                yearlyOverviewChart.destroy();
+            }
+            
+            const monthOrder = ['ian', 'feb', 'mar', 'apr', 'mai', 'iun', 'iul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+            const monthNamesRo = ['Ian', 'Feb', 'Mar', 'Apr', 'Mai', 'Iun', 'Iul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            
+            // Calculează mediile pentru fiecare lună
+            const avgPrezenti = [];
+            const avgMotivati = [];
+            
+            monthOrder.forEach((monthKey) => {
+                const month = monthlyData[monthKey];
+                
+                if (month && month.data && month.data.length > 0) {
+                    const totalPrezenti = month.data.reduce((sum, d) => sum + d.prezenti, 0);
+                    const totalMotivati = month.data.reduce((sum, d) => sum + d.motivati, 0);
+                    const sessions = month.data.length;
+                    
+                    const avgP = Math.round(totalPrezenti / sessions);
+                    const avgM = Math.round(totalMotivati / sessions);
+                    
+                    avgPrezenti.push(avgP);
+                    avgMotivati.push(avgM);
+                } else {
+                    avgPrezenti.push(0);
+                    avgMotivati.push(0);
+                }
+            });
+            
+            yearlyOverviewChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: monthNamesRo,
+                    datasets: [
+                        {
+                            type: 'bar',
+                            label: 'Media Prezenți',
+                            data: avgPrezenti,
+                            backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                            borderColor: 'rgba(5, 150, 105, 1)',
+                            borderWidth: 2,
+                            order: 3
+                        },
+                        {
+                            type: 'bar',
+                            label: 'Media Motivați',
+                            data: avgMotivati,
+                            backgroundColor: 'rgba(245, 158, 11, 0.7)',
+                            borderColor: 'rgba(217, 119, 6, 1)',
+                            borderWidth: 2,
+                            order: 3
+                        },
+                        {
+                            type: 'line',
+                            label: 'Trend Prezenți',
+                            data: avgPrezenti,
+                            borderColor: 'rgba(5, 150, 105, 1)',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: 3,
+                            pointRadius: 5,
+                            pointBackgroundColor: 'rgba(5, 150, 105, 1)',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            tension: 0.4,
+                            fill: false,
+                            order: 1
+                        },
+                        {
+                            type: 'line',
+                            label: 'Trend Motivați',
+                            data: avgMotivati,
+                            borderColor: 'rgba(217, 119, 6, 1)',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            borderWidth: 3,
+                            pointRadius: 5,
+                            pointBackgroundColor: 'rgba(217, 119, 6, 1)',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            tension: 0.4,
+                            fill: false,
+                            order: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#9ca3af',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                },
+                                padding: 15
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                            titleColor: '#dc2626',
+                            bodyColor: '#ffffff',
+                            borderColor: '#dc2626',
+                            borderWidth: 2,
+                            padding: 12,
+                            displayColors: true,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += Math.round(context.parsed.y);
+                                    return label;
+                                }
+                            }
+                        },
+                        datalabels: {
+                            display: false // Nu afișăm labeluri pe acest grafic
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#9ca3af',
+                                stepSize: 5,
+                                font: {
+                                    size: 12
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(220, 38, 38, 0.1)'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Număr Persoane',
+                                color: '#dc2626',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#9ca3af',
+                                font: {
+                                    size: 12
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(220, 38, 38, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function createMonthlyCharts(monthlyData) {
+            console.log('📊 Creating monthly charts...');
+            
+            const accordion = document.getElementById('monthlyChartsAccordion');
+            accordion.innerHTML = ''; // Clear existing
+            
+            const currentMonth = new Date().getMonth(); // 0-11
+            const monthOrder = ['ian', 'feb', 'mar', 'apr', 'mai', 'iun', 'iul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+            const monthNamesRo = ['Ianuarie', 'Februarie', 'Martie', 'Aprilie', 'Mai', 'Iunie', 'Iulie', 'August', 'Septembrie', 'Octombrie', 'Noiembrie', 'Decembrie'];
+            
+            monthOrder.forEach((monthKey, index) => {
+                const month = monthlyData[monthKey];
+                const isCurrentMonth = index === currentMonth;
+                const hasData = month && month.data && month.data.length > 0;
+                
+                // Calculează totaluri
+                let totalPrezenti = 0;
+                let totalMotivati = 0;
+                let totalSessions = 0;
+                
+                if (hasData) {
+                    totalPrezenti = month.data.reduce((sum, d) => sum + d.prezenti, 0);
+                    totalMotivati = month.data.reduce((sum, d) => sum + d.motivati, 0);
+                    totalSessions = month.data.length;
+                }
+                
+                // Creează accordion item pentru TOATE lunile
+                const accordionItem = document.createElement('div');
+                accordionItem.className = `accordion-item ${isCurrentMonth && hasData ? 'active' : ''}`;
+                accordionItem.id = `accordion-${monthKey}`;
+                
+                const monthNameRo = monthNamesRo[index];
+                
+                accordionItem.innerHTML = `
+                    <div class="accordion-header" onclick="toggleAccordion('${monthKey}')">
+                        <div class="accordion-title">
+                            <span>📅</span>
+                            <span>${monthNameRo} 2026</span>
+                        </div>
+                        <div class="accordion-stats">
+                            ${hasData ? `
+                                <span>🗓️ ${totalSessions} antrenamente</span>
+                            ` : `
+                                <span style="color: #6b7280;">Fără date</span>
+                            `}
+                        </div>
+                        <div class="accordion-icon">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        ${hasData ? `
+                            <div class="chart-container">
+                                <canvas id="chart-${monthKey}"></canvas>
+                            </div>
+                        ` : `
+                            <div style="text-align: center; padding: 40px; color: #6b7280;">
+                                <p style="font-size: 1.2em;">📊 Nu există date pentru această lună</p>
+                            </div>
+                        `}
+                    </div>
+                `;
+                
+                accordion.appendChild(accordionItem);
+                
+                // Creează graficul (doar dacă e luna curentă, are date și este deschis)
+                if (isCurrentMonth && hasData) {
+                    setTimeout(() => createChart(monthKey, month), 100);
+                }
+            });
+        }
+        
+        function createChart(monthKey, monthData) {
+            const ctx = document.getElementById(`chart-${monthKey}`);
+            if (!ctx) return;
+            
+            // Distruge graficul existent dacă există
+            if (monthlyCharts[monthKey]) {
+                monthlyCharts[monthKey].destroy();
+            }
+            
+            const labels = monthData.data.map(d => d.date);
+            const prezentiData = monthData.data.map(d => d.prezenti);
+            const motivatiData = monthData.data.map(d => d.motivati);
+            
+            monthlyCharts[monthKey] = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Prezenți',
+                            data: prezentiData,
+                            backgroundColor: 'rgba(16, 185, 129, 0.8)',
+                            borderColor: 'rgba(5, 150, 105, 1)',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Motivați',
+                            data: motivatiData,
+                            backgroundColor: 'rgba(245, 158, 11, 0.8)',
+                            borderColor: 'rgba(217, 119, 6, 1)',
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#9ca3af',
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#dc2626',
+                            bodyColor: '#ffffff',
+                            borderColor: '#dc2626',
+                            borderWidth: 1
+                        },
+                        datalabels: {
+                            color: '#ffffff',
+                            font: {
+                                weight: 'bold',
+                                size: 12
+                            },
+                            anchor: 'end',
+                            align: 'top',
+                            offset: 0,
+                            formatter: function(value, context) {
+                                // Afișează valoarea doar dacă este > 0
+                                return value > 0 ? value : '';
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#9ca3af',
+                                stepSize: 1
+                            },
+                            grid: {
+                                color: 'rgba(220, 38, 38, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#9ca3af'
+                            },
+                            grid: {
+                                color: 'rgba(220, 38, 38, 0.1)'
+                            }
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+        }
+        
+        function toggleAccordion(monthKey) {
+            const item = document.getElementById(`accordion-${monthKey}`);
+            const wasActive = item.classList.contains('active');
+            
+            // Close all
+            document.querySelectorAll('.accordion-item').forEach(i => i.classList.remove('active'));
+            
+            // Open clicked one
+            if (!wasActive) {
+                item.classList.add('active');
+                
+                // Creează graficul dacă nu există
+                if (!monthlyCharts[monthKey]) {
+                    // Găsește datele pentru această lună
+                    if (window.cachedMonthlyData && window.cachedMonthlyData[monthKey]) {
+                        setTimeout(() => createChart(monthKey, window.cachedMonthlyData[monthKey]), 100);
+                    }
+                }
+            }
+        }
+
+        function showError(message) {
+            const errorContainer = document.getElementById('errorContainer');
+            errorContainer.innerHTML = `
+                <div class="error">
+                    <h3>⚠️ Eroare la încărcarea datelor</h3>
+                    <p>${message}</p>
+                    <p style="margin-top: 15px; font-size: 0.9em;">
+                        <strong>Verifică că:</strong><br>
+                        1️⃣ Google Sheets e public: Share → Anyone with the link can <strong>VIEW</strong><br>
+                        2️⃣ ID-ul sheet-ului e corect în cod<br>
+                        3️⃣ Tab-ul se numește "Prezente2026" (sau actualizează GID în cod)
+                    </p>
+                </div>
+            `;
+            errorContainer.style.display = 'block';
+        }
+
+        async function syncData() {
+            const btn = document.getElementById('syncBtn');
+            btn.textContent = '⏳ Se sincronizează...';
+            btn.classList.add('loading');
+            btn.disabled = true;
+
+            try {
+                await loadDashboard();
+                btn.textContent = '✅ Sincronizat!';
+                setTimeout(() => {
+                    btn.textContent = '🔄 Sincronizare Date';
+                    btn.classList.remove('loading');
+                    btn.disabled = false;
+                }, 2000);
+            } catch (error) {
+                btn.textContent = '❌ Eroare';
+                setTimeout(() => {
+                    btn.textContent = '🔄 Sincronizare Date';
+                    btn.classList.remove('loading');
+                    btn.disabled = false;
+                }, 3000);
+            }
+        }
+
+        // === LOGIN SYSTEM ===
+
+        const ACCOUNTS_SHEET_ID = '1DZZLXB6rm0lXSqLtMdfFXNRWi9Gh9N8oKbXMM63FwQA';
+        const ACCOUNTS_GID = '416511703'; // Sheet "Accounts"
+
+        // Fetch accounts from Google Sheets
+        async function fetchAccounts() {
+            try {
+                const url = `https://docs.google.com/spreadsheets/d/${ACCOUNTS_SHEET_ID}/gviz/tq?gid=${ACCOUNTS_GID}&tqx=out:json`;
+                const response = await fetch(url);
+                const text = await response.text();
+                
+                const jsonMatch = text.match(/google\.visualization\.Query\.setResponse\((.*)\);/s);
+                if (!jsonMatch) {
+                    throw new Error('Invalid format from Google Sheets');
+                }
+                
+                const jsonData = JSON.parse(jsonMatch[1]);
+                
+                if (jsonData.status === 'error') {
+                    throw new Error('Error from Google Sheets');
+                }
+                
+                return jsonData.table.rows;
+            } catch (error) {
+                console.error('Error fetching accounts:', error);
+                return null;
+            }
+        }
+
+        // Toggle login section
+        function toggleLogin() {
+            const loginSection = document.getElementById('loginSection');
+            if (loginSection.style.display === 'none') {
+                loginSection.style.display = 'block';
+            } else {
+                loginSection.style.display = 'none';
+            }
+        }
+
+        // Show message
+        function showLoginMessage(message, isError = false) {
+            const messageDiv = document.getElementById('loginMessage');
+            messageDiv.textContent = message;
+            messageDiv.style.display = 'block';
+            messageDiv.style.background = isError ? 'rgba(239, 68, 68, 0.2)' : 'rgba(16, 185, 129, 0.2)';
+            messageDiv.style.color = isError ? '#ef4444' : '#10b981';
+            messageDiv.style.border = `2px solid ${isError ? '#ef4444' : '#10b981'}`;
+            
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        // Handle login
+        async function handleLogin() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                showLoginMessage('Te rog completeaza username si parola!', true);
+                return;
+            }
+            
+            // Show loading
+            const loginBtn = event.target;
+            const originalText = loginBtn.textContent;
+            loginBtn.textContent = '⏳ Se verifica...';
+            loginBtn.disabled = true;
+            
+            try {
+                // Fetch accounts from Google Sheets
+                const rows = await fetchAccounts();
+                
+                if (!rows) {
+                    showLoginMessage('Eroare la conectarea cu baza de date!', true);
+                    loginBtn.textContent = originalText;
+                    loginBtn.disabled = false;
+                    return;
+                }
+                
+                // Search for matching username and password
+                // Column A = Grad, B = Nume, C = Username, D = Password
+                for (let i = 0; i < rows.length; i++) {
+                    const row = rows[i];
+                    const cells = row.c;
+                    
+                    if (!cells || cells.length < 4) continue;
+                    
+                    const nume = cells[1]?.v ? String(cells[1].v).trim() : '';
+                    const sheetUsername = cells[2]?.v ? String(cells[2].v).trim() : '';
+                    const sheetPassword = cells[3]?.v ? String(cells[3].v).trim() : '';
+                    
+                    // Skip empty rows or header rows
+                    if (!nume || !sheetUsername || nume === 'Nume' || sheetUsername === 'Username') continue;
+                    
+                    // Check if username and password match (case insensitive for username)
+                    if (sheetUsername.toLowerCase() === username.toLowerCase() && sheetPassword === password) {
+
+                        // Success! Save user info and redirect
+                        localStorage.setItem('logged_in_user', nume);
+                        localStorage.setItem('logged_in_username', username);
+                        
+                        showLoginMessage('Login successful! Redirectionare...', false);
+                        
+                        setTimeout(() => {
+                            window.location.href = 'profil.html';
+                        }, 1000);
+                        
+                        return;
+                    }
+                }
+                
+                // No match found
+                showLoginMessage('Username sau parola incorecta!', true);
+                loginBtn.textContent = originalText;
+                loginBtn.disabled = false;
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showLoginMessage('Eroare la autentificare!', true);
+                loginBtn.textContent = originalText;
+                loginBtn.disabled = false;
+            }
+        }
+
+        // Handle Enter key in input fields
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add Enter key support for login
+            const inputs = ['username', 'password'];
+            inputs.forEach(id => {
+                const input = document.getElementById(id);
+                if (input) {
+                    input.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            handleLogin();
+                        }
+                    });
+                }
+            });
+        });
+
+        async function loadDashboard() {
+            try {
+                console.log('=== LOADING DASHBOARD ===');
+                const stats = await fetchSheetData();
+                console.log('Loaded stats:', stats);
+                console.log('📅 lastTrainingDate:', stats.lastTrainingDate);
+                console.log('👥 prezentiUltimulAntrenament:', stats.prezentiUltimulAntrenament);
+                
+                updateDashboard(stats);
+                
+                document.getElementById('errorContainer').style.display = 'none';
+                document.getElementById('loadingContainer').style.display = 'none';
+                document.getElementById('dashboardContent').style.display = 'block';
+                
+                const lastUpdate = new Date(stats.lastUpdate);
+                document.getElementById('lastUpdate').textContent = 
+                    `Ultima actualizare: ${lastUpdate.toLocaleDateString('ro-RO')} ${lastUpdate.toLocaleTimeString('ro-RO')}`;
+                
+            } catch (error) {
+                console.error('Error in loadDashboard:', error);
+                document.getElementById('loadingContainer').style.display = 'none';
+                showError(error.message || 'Nu s-au putut încărca datele.');
+            }
+        }
+
+        async function init() {
+            await loadDashboard();
+        }
+
+        // Initialize dashboard when page loads
+        window.addEventListener('DOMContentLoaded', init);
+        
+        // Auto-refresh every 5 minutes
+        setInterval(loadDashboard, 5 * 60 * 1000);
+    </script>
+</body>
+</html>
+
