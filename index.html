@@ -1816,17 +1816,18 @@
             
             const seminars = [];
             
-            // Caută coloane cu "Seminar" - scanează primele 5 rânduri din fiecare coloană
-            for (let colIndex = 12; colIndex < rows[0].c.length; colIndex++) {
+            // Caută coloane cu "Seminar" - scanează primele 10 rânduri din fiecare coloană (începe de la A/0, nu M/12)
+            for (let colIndex = 0; colIndex < rows[0].c.length; colIndex++) {
                 let seminarTitle = null;
                 let seminarRowIndex = -1;
                 
-                // Scanează primele 5 rânduri pentru a găsi "Seminar"
-                for (let rowIndex = 0; rowIndex < Math.min(rows.length, 5); rowIndex++) {
+                // Scanează TOATE rândurile pentru a găsi "Seminar" (nu doar primele 10)
+                for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
                     const row = rows[rowIndex];
                     if (!row || !row.c) continue;
                     
                     const cell = row.c[colIndex];
+                    
                     if (!cell || !cell.v) continue;
                     
                     const cellValue = String(cell.v);
@@ -1875,16 +1876,25 @@
                     
                     console.log(`  📊 "${seminarTitle}" -> ${participants.length} participants (with S)`);
                     
-                    seminars.push({
-                        title: seminarTitle,
-                        columnIndex: colIndex,
-                        participants: participants,
-                        totalParticipants: participants.length
-                    });
+                    // Adaugă seminarul DOAR dacă are participanți cu "S" (ignore "Seminar 1 sedinta" etc.)
+                    if (participants.length > 0) {
+                        seminars.push({
+                            title: seminarTitle,
+                            columnIndex: colIndex,
+                            participants: participants,
+                            totalParticipants: participants.length
+                        });
+                    } else {
+                        console.log(`  ⏭️ Skipping "${seminarTitle}" - no participants with S`);
+                    }
                 }
             }
             
             console.log(`📚 Total seminars found: ${seminars.length}`);
+            console.log('📋 List of all seminars found:');
+            seminars.forEach((sem, idx) => {
+                console.log(`   ${idx + 1}. "${sem.title}" (Col ${sem.columnIndex}, ${sem.totalParticipants} participants)`);
+            });
             return seminars;
         }
 
