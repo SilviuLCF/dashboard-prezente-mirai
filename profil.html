@@ -863,22 +863,56 @@
                 
                 console.log(`✅ Total seminarii: ${allSeminars.length} (${seminars2025.length} din 2025, ${seminars2026.length} din 2026)`);
                 
-                // Afișează seminarii
+                // Afișează seminarii grupate pe ani
                 if (allSeminars.length === 0) {
                     container.innerHTML = '<div style="color: #9ca3af; text-align: center;">Nu a participat la niciun stagiu încă</div>';
                 } else {
-                    let html = '<div style="display: flex; flex-direction: column; gap: 10px;">';
+                    let html = '';
                     
-                    allSeminars.forEach(seminar => {
+                    // Seminarii 2025
+                    if (seminars2025.length > 0) {
                         html += `
-                            <div style="background: rgba(220, 38, 38, 0.1); border-left: 3px solid #dc2626; padding: 12px 15px; border-radius: 8px;">
-                                <div style="color: #fff; font-weight: 600; margin-bottom: 5px;">${seminar.title}</div>
-                                <div style="color: #9ca3af; font-size: 0.9em;">Sesiuni: <span style="color: #dc2626; font-weight: 600;">${seminar.level}</span></div>
-                            </div>
+                            <div style="margin-bottom: 25px;">
+                                <div style="color: #dc2626; font-weight: 700; font-size: 1.1em; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid rgba(220, 38, 38, 0.3);">
+                                    📅 Anul 2025 (${seminars2025.length} ${seminars2025.length === 1 ? 'stagiu' : 'stagii'})
+                                </div>
+                                <div style="display: flex; flex-direction: column; gap: 10px;">
                         `;
-                    });
+                        
+                        seminars2025.forEach(seminar => {
+                            html += `
+                                <div style="background: rgba(220, 38, 38, 0.1); border-left: 3px solid #dc2626; padding: 12px 15px; border-radius: 8px;">
+                                    <div style="color: #fff; font-weight: 600; margin-bottom: 5px;">${seminar.title}</div>
+                                    <div style="color: #9ca3af; font-size: 0.9em;">Sesiuni: <span style="color: #dc2626; font-weight: 600;">${seminar.level}</span></div>
+                                </div>
+                            `;
+                        });
+                        
+                        html += '</div></div>';
+                    }
                     
-                    html += '</div>';
+                    // Seminarii 2026
+                    if (seminars2026.length > 0) {
+                        html += `
+                            <div style="margin-bottom: 15px;">
+                                <div style="color: #dc2626; font-weight: 700; font-size: 1.1em; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid rgba(220, 38, 38, 0.3);">
+                                    📅 Anul 2026 (${seminars2026.length} ${seminars2026.length === 1 ? 'stagiu' : 'stagii'})
+                                </div>
+                                <div style="display: flex; flex-direction: column; gap: 10px;">
+                        `;
+                        
+                        seminars2026.forEach(seminar => {
+                            html += `
+                                <div style="background: rgba(220, 38, 38, 0.1); border-left: 3px solid #dc2626; padding: 12px 15px; border-radius: 8px;">
+                                    <div style="color: #fff; font-weight: 600; margin-bottom: 5px;">${seminar.title}</div>
+                                    <div style="color: #9ca3af; font-size: 0.9em;">Sesiuni: <span style="color: #dc2626; font-weight: 600;">${seminar.level}</span></div>
+                                </div>
+                            `;
+                        });
+                        
+                        html += '</div></div>';
+                    }
+                    
                     container.innerHTML = html;
                 }
                 
