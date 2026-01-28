@@ -1249,12 +1249,16 @@
                 const jsonData2025 = JSON.parse(jsonMatch2025[1]);
                 if (jsonData2025.status === 'error') throw new Error('Eroare Google Sheets 2025');
                 
-                // Procesează seminarii din ambele sheet-uri
-                const seminars2026 = processSeminarsData(jsonData2026);
-                const seminars2025 = processSeminarsData(jsonData2025);
+                // Procesează seminarii din ambele sheet-uri și adaugă anul
+                const seminars2026 = processSeminarsData(jsonData2026).map(s => ({...s, year: 2026}));
+                const seminars2025 = processSeminarsData(jsonData2025).map(s => ({...s, year: 2025}));
                 
-                // Combină seminarii - pune 2025 primele (cronologic)
-                const allSeminars = [...seminars2025, ...seminars2026];
+                // Combină seminarii - returnează separat pentru categorisire
+                const allSeminars = {
+                    seminars2025: seminars2025,
+                    seminars2026: seminars2026,
+                    all: [...seminars2026, ...seminars2025] // 2026 primele pentru afișare
+                };
                 
                 console.log(`✅ Total seminarii: ${allSeminars.length} (${seminars2025.length} din 2025, ${seminars2026.length} din 2026)`);
                 
@@ -2260,18 +2264,39 @@
             updateParticipantsTable(filtered);
         }
 
-        // Seminars display
-        function displaySeminars(seminars) {
-            console.log('📚 Displaying seminars:', seminars.length);
+        // Toggle acordeon pentru seminarii 2025
+        function toggleSeminarsTab2025() {
+            const content = document.getElementById('seminarsTab2025Content');
+            const arrow = document.getElementById('seminarsTab2025Arrow');
             
+            if (content.style.display === 'none' || content.style.display === '') {
+                content.style.display = 'block';
+                arrow.style.transform = 'rotate(180deg)';
+            } else {
+                content.style.display = 'none';
+                arrow.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // Seminars display (cu categorisire pe ani: 2026 și 2025)
+        function displaySeminars(seminarsData) {
             const container = document.getElementById('seminarsContainer');
             
-            if (seminars.length === 0) {
+            // Verifică dacă avem datele în format nou (cu separare pe ani)
+            const seminars2026 = seminarsData.seminars2026 || [];
+            const seminars2025 = seminarsData.seminars2025 || [];
+            
+            console.log(`📚 Displaying seminars: ${seminars2026.length} (2026) + ${seminars2025.length} (2025)`);
+            
+            if (seminars2026.length === 0 && seminars2025.length === 0) {
                 container.innerHTML = '<div class="no-seminars">📚 Nu au fost găsite seminarii</div>';
                 return;
             }
             
-            container.innerHTML = seminars.map(seminar => `
+            let html = '';
+            
+            // Funcție helper pentru afișare seminar
+            const renderSeminar = (seminar) => `
                 <div class="seminar-section">
                     <div class="seminar-title">
                         📚 ${seminar.title}
@@ -2292,7 +2317,36 @@
                         </div>
                     ` : '<div style="color: #6b7280; text-align: center; padding: 20px;">Nu au fost participanți prezenți</div>'}
                 </div>
-            `).join('');
+            `;
+            
+            // Seminarii 2026 (vizibile, NU acordeon)
+            if (seminars2026.length > 0) {
+                html += `
+                    <div style="margin-bottom: 40px;">
+                        <div style="color: #dc2626; font-weight: 700; font-size: 1.3em; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 3px solid rgba(220, 38, 38, 0.3); text-align: center;">
+                            📅 Anul 2026 (${seminars2026.length} ${seminars2026.length === 1 ? 'seminar' : 'seminarii'})
+                        </div>
+                        ${seminars2026.map(renderSeminar).join('')}
+                    </div>
+                `;
+            }
+            
+            // Seminarii 2025 (ACORDEON)
+            if (seminars2025.length > 0) {
+                html += `
+                    <div style="margin-bottom: 20px;">
+                        <div class="accordion-header-seminars" onclick="toggleSeminarsTab2025()" style="color: #dc2626; font-weight: 700; font-size: 1.3em; padding: 20px; background: rgba(220, 38, 38, 0.1); border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s ease; border: 2px solid rgba(220, 38, 38, 0.3);">
+                            <span>📅 Anul 2025 (${seminars2025.length} ${seminars2025.length === 1 ? 'seminar' : 'seminarii'})</span>
+                            <span id="seminarsTab2025Arrow" style="font-size: 1.3em; transition: transform 0.3s ease;">▼</span>
+                        </div>
+                        <div id="seminarsTab2025Content" style="display: none; margin-top: 20px;">
+                            ${seminars2025.map(renderSeminar).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
         }
 
         // Creează grafice lunare
