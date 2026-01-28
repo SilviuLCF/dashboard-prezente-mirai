@@ -1835,18 +1835,17 @@
                     if (!cell || !cell.v) continue;
                     
                     const cellValue = String(cell.v);
-                    
-                    // Verifică dacă conține "seminar" (case insensitive)
-                    // DAR exclude "sedinta", "recuperare" și alte texte invalide
                     const lowerValue = cellValue.toLowerCase();
                     
                     // ❌ EXCLUDE EXPLICIT: "sedinta", "ședință", "recuperare"
+                    // Dacă găsim text cu "sedinta", SKIP COMPLET această coloană
                     if (lowerValue.includes('sedinta') || 
                         lowerValue.includes('ședință') || 
                         lowerValue.includes('recuperare') ||
                         lowerValue.match(/seminar\s+\d+\s+[sș]edin[tț]/i)) {
-                        console.log(`❌ EXCLUDED: "${cellValue}" - contains invalid pattern`);
-                        continue; // Skip this cell entirely
+                        console.log(`❌ EXCLUDED COLUMN ${colIndex}: "${cellValue}" - contains invalid pattern`);
+                        seminarTitle = null; // Resetează pentru a nu procesa participanții
+                        break; // Ieși din bucla de rânduri pentru această coloană
                     }
                     
                     // ✅ INCLUDE doar seminarii valide
