@@ -777,17 +777,24 @@
             
             const seminars = [];
             
-            // Search for columns with "Seminar" in the first 10 rows (starting from column 12/M)
-            for (let colIndex = 12; colIndex < headerRow.c.length; colIndex++) {
+            // Search for columns with "Seminar" in the first 10 rows (starting from column 0/A, not 12/M)
+            for (let colIndex = 0; colIndex < headerRow.c.length; colIndex++) {
                 let seminarTitle = null;
                 
-                // Check first 10 rows for seminar title
-                for (let rowIdx = 0; rowIdx < Math.min(10, rows.length); rowIdx++) {
+                // Check ALL rows for seminar title (not just first 10)
+                for (let rowIdx = 0; rowIdx < rows.length; rowIdx++) {
                     const cell = rows[rowIdx].c[colIndex];
+                    
                     if (cell && cell.v) {
                         const cellValue = String(cell.v);
-                        if (cellValue.toLowerCase().includes('seminar')) {
+                        const lowerValue = cellValue.toLowerCase();
+                        // Exclude "sedinta", "recuperare" și alte texte invalide
+                        if (lowerValue.includes('seminar') && 
+                            !lowerValue.includes('sedinta') && 
+                            !lowerValue.includes('recuperare') &&
+                            !lowerValue.match(/^seminar\s+\d+\s+sedinta/i)) {
                             seminarTitle = cellValue;
+                            console.log(`✅ [Profil] Found seminar "${seminarTitle}" in column ${colIndex}, row ${rowIdx}`);
                             break;
                         }
                     }

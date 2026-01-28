@@ -1837,7 +1837,12 @@
                     const cellValue = String(cell.v);
                     
                     // Verifică dacă conține "seminar" (case insensitive)
-                    if (cellValue.toLowerCase().includes('seminar')) {
+                    // DAR exclude "sedinta", "recuperare" și alte texte invalide
+                    const lowerValue = cellValue.toLowerCase();
+                    if (lowerValue.includes('seminar') && 
+                        !lowerValue.includes('sedinta') && 
+                        !lowerValue.includes('recuperare') &&
+                        !lowerValue.match(/^seminar\s+\d+\s+sedinta/i)) {
                         seminarTitle = cellValue;
                         seminarRowIndex = rowIndex;
                         console.log(`✅ Found seminar "${seminarTitle}" in column ${colIndex}, row ${rowIndex}`);
