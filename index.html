@@ -1222,7 +1222,50 @@
         // Google Sheets configuration - DOAR sheet-ul trebuie să fie public!
         const SHEET_ID = '1DZZLXB6rm0lXSqLtMdfFXNRWi9Gh9N8oKbXMM63FwQA';
         const GID = '1161792968'; // Prezente2026 tab
+        const GID_2025 = '706451964'; // Prezente2025 tab
         
+        // Fetch seminarii din ambele sheet-uri (2025 și 2026)
+        async function fetchAndCombineSeminars() {
+            try {
+                console.log('📚 Fetch seminarii din ambele sheet-uri...');
+                
+                // Fetch din Prezente2026
+                const url2026 = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${GID}&tqx=out:json`;
+                const response2026 = await fetch(url2026);
+                const text2026 = await response2026.text();
+                const jsonMatch2026 = text2026.match(/google\.visualization\.Query\.setResponse\((.*)\);/s);
+                
+                if (!jsonMatch2026) throw new Error('Format invalid pentru Prezente2026');
+                const jsonData2026 = JSON.parse(jsonMatch2026[1]);
+                if (jsonData2026.status === 'error') throw new Error('Eroare Google Sheets 2026');
+                
+                // Fetch din Prezente2025
+                const url2025 = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${GID_2025}&tqx=out:json`;
+                const response2025 = await fetch(url2025);
+                const text2025 = await response2025.text();
+                const jsonMatch2025 = text2025.match(/google\.visualization\.Query\.setResponse\((.*)\);/s);
+                
+                if (!jsonMatch2025) throw new Error('Format invalid pentru Prezente2025');
+                const jsonData2025 = JSON.parse(jsonMatch2025[1]);
+                if (jsonData2025.status === 'error') throw new Error('Eroare Google Sheets 2025');
+                
+                // Procesează seminarii din ambele sheet-uri
+                const seminars2026 = processSeminarsData(jsonData2026);
+                const seminars2025 = processSeminarsData(jsonData2025);
+                
+                // Combină seminarii - pune 2025 primele (cronologic)
+                const allSeminars = [...seminars2025, ...seminars2026];
+                
+                console.log(`✅ Total seminarii: ${allSeminars.length} (${seminars2025.length} din 2025, ${seminars2026.length} din 2026)`);
+                
+                return allSeminars;
+                
+            } catch (error) {
+                console.error('Error fetching seminars:', error);
+                return [];
+            }
+        }
+
         // Folosește Google Visualization API (nu necesită configurare!)
         async function fetchSheetData() {
             try {
@@ -1256,8 +1299,8 @@
                 const monthlyData = processMonthlyData(jsonData);
                 window.cachedMonthlyData = monthlyData; // Salvează global pentru accordion
                 
-                // Procesează seminariile
-                const seminarsData = processSeminarsData(jsonData);
+                // Procesează seminariile din ambele sheet-uri
+                const seminarsData = await fetchAndCombineSeminars();
                 window.cachedSeminarsData = seminarsData;
                 
                 // Creează graficul anual de overview

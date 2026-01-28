@@ -460,7 +460,8 @@
 
     <script>
         const SHEET_ID = '1DZZLXB6rm0lXSqLtMdfFXNRWi9Gh9N8oKbXMM63FwQA';
-        const GID = '1161792968';
+        const GID = '1161792968'; // Prezente2026
+        const GID_2025 = '706451964'; // Prezente2025
         
         // Get logged in user from localStorage
         const LOGGED_IN_USER = localStorage.getItem('logged_in_user');
@@ -744,8 +745,8 @@
                         adeverintaElement.classList.add('error');
                     }
                     
-                    // Find and display seminars for this user
-                    displayUserSeminars(jsonData, i);
+                    // Find and display seminars for this user (from both 2025 and 2026)
+                    displayUserSeminarsFromBothSheets(nume);
                     
                     // Show profile card
                     document.getElementById('loadingContainer').style.display = 'none';
@@ -762,7 +763,8 @@
             document.getElementById('loadingContainer').innerHTML = '<div style="color: #f59e0b; text-align: center; padding: 50px;">⚠️ Profilul nu a fost găsit</div>';
         }
 
-        function displayUserSeminars(jsonData, userRowIndex) {
+        // Funcție helper pentru extragerea seminarii din un dataset
+        function extractSeminarsFromData(jsonData, userRowIndex) {
             const rows = jsonData.table.rows;
             const headerRow = rows[0];
             const userRow = rows[userRowIndex];
@@ -801,25 +803,89 @@
                 }
             }
             
-            // Display seminars
-            const container = document.getElementById('seminarsContainer');
-            
-            if (seminars.length === 0) {
-                container.innerHTML = '<div style="color: #9ca3af; text-align: center;">Nu a participat la niciun stagiu încă</div>';
-            } else {
-                let html = '<div style="display: flex; flex-direction: column; gap: 10px;">';
+            return seminars;
+        }
+
+        // Afișare seminarii din ambele sheet-uri (2025 și 2026)
+        async function displayUserSeminarsFromBothSheets(nume) {
+            try {
+                console.log(`📚 Fetch seminarii pentru ${nume}...`);
                 
-                seminars.forEach(seminar => {
-                    html += `
-                        <div style="background: rgba(220, 38, 38, 0.1); border-left: 3px solid #dc2626; padding: 12px 15px; border-radius: 8px;">
-                            <div style="color: #fff; font-weight: 600; margin-bottom: 5px;">${seminar.title}</div>
-                            <div style="color: #9ca3af; font-size: 0.9em;">Sesiuni: <span style="color: #dc2626; font-weight: 600;">${seminar.level}</span></div>
-                        </div>
-                    `;
-                });
+                const container = document.getElementById('seminarsContainer');
+                container.innerHTML = '<div style="color: #9ca3af; text-align: center;">Se încarcă seminarii...</div>';
                 
-                html += '</div>';
-                container.innerHTML = html;
+                // Fetch din Prezente2026
+                const url2026 = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${GID}&tqx=out:json`;
+                const response2026 = await fetch(url2026);
+                const text2026 = await response2026.text();
+                const jsonMatch2026 = text2026.match(/google\.visualization\.Query\.setResponse\((.*)\);/s);
+                if (!jsonMatch2026) throw new Error('Format invalid pentru Prezente2026');
+                const jsonData2026 = JSON.parse(jsonMatch2026[1]);
+                
+                // Fetch din Prezente2025
+                const url2025 = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${GID_2025}&tqx=out:json`;
+                const response2025 = await fetch(url2025);
+                const text2025 = await response2025.text();
+                const jsonMatch2025 = text2025.match(/google\.visualization\.Query\.setResponse\((.*)\);/s);
+                if (!jsonMatch2025) throw new Error('Format invalid pentru Prezente2025');
+                const jsonData2025 = JSON.parse(jsonMatch2025[1]);
+                
+                // Găsește userRowIndex în ambele sheet-uri
+                let userRowIndex2026 = -1;
+                let userRowIndex2025 = -1;
+                
+                // Caută în Prezente2026
+                for (let i = 0; i < jsonData2026.table.rows.length; i++) {
+                    const cells = jsonData2026.table.rows[i].c;
+                    const rowName = cells[1]?.v ? String(cells[1].v).trim() : '';
+                    if (rowName.toLowerCase() === nume.toLowerCase()) {
+                        userRowIndex2026 = i;
+                        break;
+                    }
+                }
+                
+                // Caută în Prezente2025
+                for (let i = 0; i < jsonData2025.table.rows.length; i++) {
+                    const cells = jsonData2025.table.rows[i].c;
+                    const rowName = cells[1]?.v ? String(cells[1].v).trim() : '';
+                    if (rowName.toLowerCase() === nume.toLowerCase()) {
+                        userRowIndex2025 = i;
+                        break;
+                    }
+                }
+                
+                // Extrage seminarii din ambele sheet-uri
+                const seminars2026 = userRowIndex2026 !== -1 ? extractSeminarsFromData(jsonData2026, userRowIndex2026) : [];
+                const seminars2025 = userRowIndex2025 !== -1 ? extractSeminarsFromData(jsonData2025, userRowIndex2025) : [];
+                
+                // Combină seminarii (2025 primele - cronologic)
+                const allSeminars = [...seminars2025, ...seminars2026];
+                
+                console.log(`✅ Total seminarii: ${allSeminars.length} (${seminars2025.length} din 2025, ${seminars2026.length} din 2026)`);
+                
+                // Afișează seminarii
+                if (allSeminars.length === 0) {
+                    container.innerHTML = '<div style="color: #9ca3af; text-align: center;">Nu a participat la niciun stagiu încă</div>';
+                } else {
+                    let html = '<div style="display: flex; flex-direction: column; gap: 10px;">';
+                    
+                    allSeminars.forEach(seminar => {
+                        html += `
+                            <div style="background: rgba(220, 38, 38, 0.1); border-left: 3px solid #dc2626; padding: 12px 15px; border-radius: 8px;">
+                                <div style="color: #fff; font-weight: 600; margin-bottom: 5px;">${seminar.title}</div>
+                                <div style="color: #9ca3af; font-size: 0.9em;">Sesiuni: <span style="color: #dc2626; font-weight: 600;">${seminar.level}</span></div>
+                            </div>
+                        `;
+                    });
+                    
+                    html += '</div>';
+                    container.innerHTML = html;
+                }
+                
+            } catch (error) {
+                console.error('Error fetching seminars:', error);
+                const container = document.getElementById('seminarsContainer');
+                container.innerHTML = '<div style="color: #f59e0b; text-align: center;">Eroare la încărcarea seminariilor</div>';
             }
         }
 
