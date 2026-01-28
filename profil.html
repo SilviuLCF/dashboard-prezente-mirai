@@ -107,6 +107,11 @@
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
         }
 
+        .accordion-header-seminars:hover {
+            background: rgba(220, 38, 38, 0.2) !important;
+            transform: translateX(5px);
+        }
+
         .profile-photo {
             width: 100%;
             height: 100%;
@@ -863,38 +868,16 @@
                 
                 console.log(`✅ Total seminarii: ${allSeminars.length} (${seminars2025.length} din 2025, ${seminars2026.length} din 2026)`);
                 
-                // Afișează seminarii grupate pe ani
+                // Afișează seminarii grupate pe ani (2026 primele, 2025 acordeon)
                 if (allSeminars.length === 0) {
                     container.innerHTML = '<div style="color: #9ca3af; text-align: center;">Nu a participat la niciun stagiu încă</div>';
                 } else {
                     let html = '';
                     
-                    // Seminarii 2025
-                    if (seminars2025.length > 0) {
-                        html += `
-                            <div style="margin-bottom: 25px;">
-                                <div style="color: #dc2626; font-weight: 700; font-size: 1.1em; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid rgba(220, 38, 38, 0.3);">
-                                    📅 Anul 2025 (${seminars2025.length} ${seminars2025.length === 1 ? 'stagiu' : 'stagii'})
-                                </div>
-                                <div style="display: flex; flex-direction: column; gap: 10px;">
-                        `;
-                        
-                        seminars2025.forEach(seminar => {
-                            html += `
-                                <div style="background: rgba(220, 38, 38, 0.1); border-left: 3px solid #dc2626; padding: 12px 15px; border-radius: 8px;">
-                                    <div style="color: #fff; font-weight: 600; margin-bottom: 5px;">${seminar.title}</div>
-                                    <div style="color: #9ca3af; font-size: 0.9em;">Sesiuni: <span style="color: #dc2626; font-weight: 600;">${seminar.level}</span></div>
-                                </div>
-                            `;
-                        });
-                        
-                        html += '</div></div>';
-                    }
-                    
-                    // Seminarii 2026
+                    // Seminarii 2026 (vizibile, NU acordeon)
                     if (seminars2026.length > 0) {
                         html += `
-                            <div style="margin-bottom: 15px;">
+                            <div style="margin-bottom: 25px;">
                                 <div style="color: #dc2626; font-weight: 700; font-size: 1.1em; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid rgba(220, 38, 38, 0.3);">
                                     📅 Anul 2026 (${seminars2026.length} ${seminars2026.length === 1 ? 'stagiu' : 'stagii'})
                                 </div>
@@ -911,6 +894,30 @@
                         });
                         
                         html += '</div></div>';
+                    }
+                    
+                    // Seminarii 2025 (ACORDEON)
+                    if (seminars2025.length > 0) {
+                        html += `
+                            <div style="margin-bottom: 15px;">
+                                <div class="accordion-header-seminars" onclick="toggleSeminars2025()" style="color: #dc2626; font-weight: 700; font-size: 1.1em; padding: 15px; background: rgba(220, 38, 38, 0.1); border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s ease;">
+                                    <span>📅 Anul 2025 (${seminars2025.length} ${seminars2025.length === 1 ? 'stagiu' : 'stagii'})</span>
+                                    <span id="seminars2025Arrow" style="font-size: 1.2em; transition: transform 0.3s ease;">▼</span>
+                                </div>
+                                <div id="seminars2025Content" style="display: none; margin-top: 15px; padding-left: 10px;">
+                                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        `;
+                        
+                        seminars2025.forEach(seminar => {
+                            html += `
+                                <div style="background: rgba(220, 38, 38, 0.1); border-left: 3px solid #dc2626; padding: 12px 15px; border-radius: 8px;">
+                                    <div style="color: #fff; font-weight: 600; margin-bottom: 5px;">${seminar.title}</div>
+                                    <div style="color: #9ca3af; font-size: 0.9em;">Sesiuni: <span style="color: #dc2626; font-weight: 600;">${seminar.level}</span></div>
+                                </div>
+                            `;
+                        });
+                        
+                        html += '</div></div></div>';
                     }
                     
                     container.innerHTML = html;
@@ -1092,6 +1099,20 @@
                 console.error('Error fetching Pe Cale data:', error);
                 document.getElementById('aniPractica').textContent = '-';
                 document.getElementById('zilePeCale').textContent = '-';
+            }
+        }
+
+        // Toggle acordeon pentru seminarii 2025
+        function toggleSeminars2025() {
+            const content = document.getElementById('seminars2025Content');
+            const arrow = document.getElementById('seminars2025Arrow');
+            
+            if (content.style.display === 'none' || content.style.display === '') {
+                content.style.display = 'block';
+                arrow.style.transform = 'rotate(180deg)';
+            } else {
+                content.style.display = 'none';
+                arrow.style.transform = 'rotate(0deg)';
             }
         }
 
