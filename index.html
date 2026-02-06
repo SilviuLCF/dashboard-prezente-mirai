@@ -1094,6 +1094,9 @@
                 <!-- NSSM Semnat vs Nesemnat -->
                 <div class="card">
                     <div class="card-title">📝 Status NSSM</div>
+                    <div style="text-align: center; padding: 10px 0;">
+                        <div style="font-size: 1.2em; color: #9ca3af; margin-bottom: 15px;" id="nssmData"></div>
+                    </div>
                     <div class="split-card">
                         <div class="split-section">
                             <div class="split-label">Semnat</div>
@@ -1109,6 +1112,9 @@
                     <div class="card-mini-chart">
                         <canvas id="chartNSSM"></canvas>
                     </div>
+                    <div style="text-align: center; margin-top: 15px;">
+                        <a href="status-nssm.html" class="sync-btn" style="display: inline-block; text-decoration: none;">👥 Vezi lista semnat / nesemnat</a>
+                    </div>
                 </div>
             </div>
 
@@ -1117,6 +1123,9 @@
                 <!-- Adeverință Medicală 2026 -->
                 <div class="card">
                     <div class="card-title">🏥 Adeverință Medicală 2026</div>
+                    <div style="text-align: center; padding: 10px 0;">
+                        <div style="font-size: 1.2em; color: #9ca3af; margin-bottom: 15px;" id="adeverintaData"></div>
+                    </div>
                     <div class="split-card">
                         <div class="split-section">
                             <div class="split-label">Valabilă</div>
@@ -1131,6 +1140,9 @@
                     </div>
                     <div class="card-mini-chart">
                         <canvas id="chartAdeverinta"></canvas>
+                    </div>
+                    <div style="text-align: center; margin-top: 15px;">
+                        <a href="adeverinta-medicala.html" class="sync-btn" style="display: inline-block; text-decoration: none;">👥 Vezi lista valabilă / lipsă</a>
                     </div>
                 </div>
             </div>
@@ -2029,6 +2041,10 @@
             if (elPregatiriData) elPregatiriData.textContent = dataAstazi;
             const elCopiiAdultiData = document.getElementById('copiiAdultiData');
             if (elCopiiAdultiData) elCopiiAdultiData.textContent = dataAstazi;
+            const elNssmData = document.getElementById('nssmData');
+            if (elNssmData) elNssmData.textContent = dataAstazi;
+            const elAdeverintaData = document.getElementById('adeverintaData');
+            if (elAdeverintaData) elAdeverintaData.textContent = dataAstazi;
             
             // Update participants list
             if (stats.participanti && stats.participanti.length > 0) {

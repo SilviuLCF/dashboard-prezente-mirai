@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status NSSM - Semnat și Nesemnat | Mirai Dojo</title>
+    <link rel="icon" type="image/png" href="mirai-dojo-logo.png">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        .back-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+            text-decoration: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(220, 38, 38, 0.4);
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(220, 38, 38, 0.6);
+        }
+        .page-title {
+            color: #fff;
+            font-size: 2em;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .section {
+            background: linear-gradient(135deg, #1f1f1f 0%, #0a0a0a 100%);
+            border: 2px solid #dc2626;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        .section-title {
+            color: #dc2626;
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(220, 38, 38, 0.3);
+        }
+        .section-title.semnat { color: #10b981; border-bottom-color: rgba(16, 185, 129, 0.3); }
+        .section-title.nesemnat { color: #ef4444; border-bottom-color: rgba(239, 68, 68, 0.3); }
+        .section-title.unknown { color: #9ca3af; border-bottom-color: rgba(156, 163, 175, 0.3); }
+        .participant-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .participant-item {
+            background: rgba(255,255,255,0.05);
+            padding: 12px 15px;
+            border-radius: 8px;
+            color: #fff;
+        }
+        .participant-item .grad { color: #dc2626; font-weight: 600; }
+        .loading, .error {
+            text-align: center;
+            padding: 50px 20px;
+            color: #9ca3af;
+            font-size: 1.2em;
+        }
+        .error { color: #ef4444; }
+        .count-badge {
+            display: inline-block;
+            background: rgba(220, 38, 38, 0.3);
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn">← Înapoi la Dashboard</a>
+        <h1 class="page-title">📝 Status NSSM</h1>
+        <div id="loadingContainer" class="loading">Se încarcă datele...</div>
+        <div id="contentContainer" style="display: none;">
+            <div class="section">
+                <div class="section-title semnat">✅ Semnat (Y) <span class="count-badge" id="countSemnat">0</span></div>
+                <div id="listSemnat" class="participant-list"></div>
+            </div>
+            <div class="section">
+                <div class="section-title nesemnat">❌ Nesemnat (N) <span class="count-badge" id="countNesemnat">0</span></div>
+                <div id="listNesemnat" class="participant-list"></div>
+            </div>
+            <div class="section">
+                <div class="section-title unknown">❓ Necunoscut / necompletat <span class="count-badge" id="countUnknown">0</span></div>
+                <div id="listUnknown" class="participant-list"></div>
+            </div>
+        </div>
+        <div id="errorContainer" class="error" style="display: none;"></div>
+    </div>
+    <script>
+        const SHEET_ID = '1DZZLXB6rm0lXSqLtMdfFXNRWi9Gh9N8oKbXMM63FwQA';
+        const GID = '1161792968';
+        const NSSM_COLUMN_INDEX = 3;
+
+        async function fetchData() {
+            const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${GID}&tqx=out:json`;
+            const response = await fetch(url);
+            const text = await response.text();
+            const jsonMatch = text.match(/google\.visualization\.Query\.setResponse\((.*)\);/s);
+            if (!jsonMatch) throw new Error('Format invalid');
+            const data = JSON.parse(jsonMatch[1]);
+            if (data.status === 'error') throw new Error('Eroare Google Sheets');
+            return data;
+        }
+
+        function buildLists(jsonData) {
+            const rows = jsonData.table.rows;
+            const semnat = [];
+            const nesemnat = [];
+            const unknown = [];
+
+            for (let i = 1; i < rows.length; i++) {
+                const cells = rows[i].c;
+                const grad = cells[0]?.v ? String(cells[0].v).trim() : '';
+                const nume = cells[1]?.v ? String(cells[1].v).trim() : '';
+                if (nume.toLowerCase().includes('prezent')) break;
+                if (!nume || !grad) continue;
+
+                const nssmVal = cells[NSSM_COLUMN_INDEX]?.v ? String(cells[NSSM_COLUMN_INDEX].v).trim().toUpperCase() : '';
+                const item = { grad, nume };
+
+                if (nssmVal === 'Y') semnat.push(item);
+                else if (nssmVal === 'N') nesemnat.push(item);
+                else unknown.push(item);
+            }
+
+            document.getElementById('countSemnat').textContent = semnat.length;
+            document.getElementById('countNesemnat').textContent = nesemnat.length;
+            document.getElementById('countUnknown').textContent = unknown.length;
+
+            const renderList = (arr, containerId) => {
+                const el = document.getElementById(containerId);
+                el.innerHTML = arr.length === 0 ? '<div style="color:#9ca3af;padding:15px;">Niciun participant</div>' : arr.map(p => `
+                    <div class="participant-item">
+                        <span><span class="grad">${p.grad}</span> – ${p.nume}</span>
+                    </div>
+                `).join('');
+            };
+            renderList(semnat, 'listSemnat');
+            renderList(nesemnat, 'listNesemnat');
+            renderList(unknown, 'listUnknown');
+
+            document.getElementById('loadingContainer').style.display = 'none';
+            document.getElementById('contentContainer').style.display = 'block';
+        }
+
+        (async function init() {
+            try {
+                const data = await fetchData();
+                buildLists(data);
+            } catch (err) {
+                document.getElementById('loadingContainer').style.display = 'none';
+                document.getElementById('errorContainer').style.display = 'block';
+                document.getElementById('errorContainer').textContent = 'Eroare la încărcarea datelor: ' + err.message;
+            }
+        })();
+    </script>
+</body>
+</html>
