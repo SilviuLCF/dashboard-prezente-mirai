@@ -976,6 +976,9 @@
                 <!-- Total Înscriși -->
                 <div class="card">
                     <div class="card-title">👥 Total Înscriși</div>
+                    <div style="text-align: center; padding: 10px 0;">
+                        <div style="font-size: 1.2em; color: #9ca3af; margin-bottom: 15px;" id="totalInscrisiData"></div>
+                    </div>
                     <div style="display: flex; align-items: center; justify-content: space-between; gap: 20px;">
                         <div style="flex: 1;">
                             <div class="card-value" id="totalInscrisi">-</div>
@@ -984,6 +987,9 @@
                         <div class="card-logo-inline">
                             <img src="mirai-dojo-logo.png" alt="Mirai Dojo Logo">
                         </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 15px;">
+                        <a href="#" class="sync-btn" style="display: inline-block; text-decoration: none;" onclick="switchTab('participanti'); return false;">👥 Vezi lista participanți</a>
                     </div>
                 </div>
 
@@ -1069,8 +1075,11 @@
                 </div>
 
                 <!-- Cotizație FRAA -->
-                <div class="card" style="cursor: pointer;" onclick="window.location.href='cotizatie.html'">
+                <div class="card">
                     <div class="card-title">💰 Cotizație Anuală FRAA</div>
+                    <div style="text-align: center; padding: 10px 0;">
+                        <div style="font-size: 1.2em; color: #9ca3af; margin-bottom: 15px;" id="cotizatieData"></div>
+                    </div>
                     <div class="split-card">
                         <div class="split-section">
                             <div class="split-label">Plătită</div>
@@ -1086,8 +1095,8 @@
                     <div class="card-mini-chart">
                         <canvas id="chartCotizatie"></canvas>
                     </div>
-                    <div style="text-align: center; margin-top: 15px; color: #9ca3af; font-size: 0.9em;">
-                        👆 Click pentru detalii
+                    <div style="text-align: center; margin-top: 15px;">
+                        <a href="https://dashboard.miraidojo.ro/cotizatie.html" class="sync-btn" style="display: inline-block; text-decoration: none;" target="_blank" rel="noopener">💰 Deschide Cotizație FRAA</a>
                     </div>
                 </div>
 
@@ -2045,6 +2054,10 @@
             if (elNssmData) elNssmData.textContent = dataAstazi;
             const elAdeverintaData = document.getElementById('adeverintaData');
             if (elAdeverintaData) elAdeverintaData.textContent = dataAstazi;
+            const elTotalInscrisiData = document.getElementById('totalInscrisiData');
+            if (elTotalInscrisiData) elTotalInscrisiData.textContent = dataAstazi;
+            const elCotizatieData = document.getElementById('cotizatieData');
+            if (elCotizatieData) elCotizatieData.textContent = dataAstazi;
             
             // Update participants list
             if (stats.participanti && stats.participanti.length > 0) {
