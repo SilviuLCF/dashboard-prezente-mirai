@@ -996,10 +996,12 @@
                             <div class="split-section">
                                 <div class="split-label">Prezenți</div>
                                 <div class="split-value" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;" id="prezentiUltimul">-</div>
+                                <div class="percentage" id="percentPrezentiUltimul">-</div>
                             </div>
                             <div class="split-section">
                                 <div class="split-label">Motivați</div>
                                 <div class="split-value" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;" id="motivatiUltimul">-</div>
+                                <div class="percentage" id="percentMotivatiUltimul">-</div>
                             </div>
                         </div>
                     </div>
@@ -1674,6 +1676,7 @@
                 percentReadyForExam: totalInscrisi > 0 ? ((readyForExam / totalInscrisi) * 100).toFixed(1) : 0,
                 percentNotReadyForExam: totalInscrisi > 0 ? ((notReadyForExam / totalInscrisi) * 100).toFixed(1) : 0,
                 percentPrezentiUltimul: totalInscrisi > 0 ? ((prezentiUltimulAntrenament / totalInscrisi) * 100).toFixed(1) : 0,
+                percentMotivatiUltimul: totalInscrisi > 0 ? ((motivatiUltimulAntrenament / totalInscrisi) * 100).toFixed(1) : 0,
                 lastUpdate: new Date().toISOString(),
                 participanti: participanti,
                 monthlyData: null  // Va fi populat separat
@@ -1969,6 +1972,11 @@
                 console.log('   Setting motivati to:', stats.motivatiUltimulAntrenament);
                 motivatiElement.textContent = stats.motivatiUltimulAntrenament || 0;
                 
+                const elPercentPrezenti = document.getElementById('percentPrezentiUltimul');
+                const elPercentMotivati = document.getElementById('percentMotivatiUltimul');
+                if (elPercentPrezenti) elPercentPrezenti.textContent = `${stats.percentPrezentiUltimul || 0}%`;
+                if (elPercentMotivati) elPercentMotivati.textContent = `${stats.percentMotivatiUltimul || 0}%`;
+                
                 // Update tab Prezențe - card full width
                 document.getElementById('ultimulAntrenamentDataFull').textContent = dateStr;
                 document.getElementById('prezentiUltimulFull').textContent = stats.prezentiUltimulAntrenament || 0;
@@ -1980,6 +1988,10 @@
                 dataElement.textContent = 'Niciun antrenament recent';
                 prezentiElement.textContent = '-';
                 motivatiElement.textContent = '-';
+                const elPercentPrezenti2 = document.getElementById('percentPrezentiUltimul');
+                const elPercentMotivati2 = document.getElementById('percentMotivatiUltimul');
+                if (elPercentPrezenti2) elPercentPrezenti2.textContent = '-';
+                if (elPercentMotivati2) elPercentMotivati2.textContent = '-';
                 
                 // Update tab Prezențe
                 document.getElementById('ultimulAntrenamentDataFull').textContent = 'Niciun antrenament recent';
