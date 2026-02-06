@@ -1045,6 +1045,9 @@
                 <!-- Copii vs Adulți -->
                 <div class="card">
                     <div class="card-title">👨‍👩‍👧‍👦 Copii vs Adulți</div>
+                    <div style="text-align: center; padding: 10px 0;">
+                        <div style="font-size: 1.2em; color: #9ca3af; margin-bottom: 15px;" id="copiiAdultiData"></div>
+                    </div>
                     <div class="split-card">
                         <div class="split-section">
                             <div class="split-label">Copii</div>
@@ -2021,6 +2024,8 @@
             const dataAstazi = new Date().toLocaleDateString('ro-RO', { day: '2-digit', month: 'long', year: 'numeric' });
             const elPregatiriData = document.getElementById('pregatiriExamenData');
             if (elPregatiriData) elPregatiriData.textContent = dataAstazi;
+            const elCopiiAdultiData = document.getElementById('copiiAdultiData');
+            if (elCopiiAdultiData) elCopiiAdultiData.textContent = dataAstazi;
             
             // Update participants list
             if (stats.participanti && stats.participanti.length > 0) {
