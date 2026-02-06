@@ -1014,6 +1014,7 @@
                 <!-- Ready for Exam -->
                 <div class="card">
                     <div class="card-title">🥋 Pregătiri Examen</div>
+                    <div class="card-subtitle" id="pregatiriExamenData" style="font-size: 0.9em; color: #9ca3af; margin-top: 4px;"></div>
                     <div class="split-card">
                         <div class="split-section">
                             <div class="split-label">Pregătit</div>
@@ -2003,6 +2004,9 @@
             document.getElementById('notReadyForExam').textContent = stats.notReadyForExam || 0;
             document.getElementById('percentReadyForExam').textContent = `${stats.percentReadyForExam || 0}%`;
             document.getElementById('percentNotReadyForExam').textContent = `${stats.percentNotReadyForExam || 0}%`;
+            const dataAstazi = new Date().toLocaleDateString('ro-RO', { day: '2-digit', month: 'long', year: 'numeric' });
+            const elPregatiriData = document.getElementById('pregatiriExamenData');
+            if (elPregatiriData) elPregatiriData.textContent = dataAstazi;
             
             // Update participants list
             if (stats.participanti && stats.participanti.length > 0) {
