@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimul Antrenament - Prezenți și Absenți | Mirai Dojo</title>
+    <link rel="icon" type="image/png" href="mirai-dojo-logo.png">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        .back-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+            text-decoration: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(220, 38, 38, 0.4);
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(220, 38, 38, 0.6);
+        }
+        .page-title {
+            color: #fff;
+            font-size: 2em;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .date-badge {
+            text-align: center;
+            font-size: 1.4em;
+            color: #dc2626;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+        .section {
+            background: linear-gradient(135deg, #1f1f1f 0%, #0a0a0a 100%);
+            border: 2px solid #dc2626;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        .section-title {
+            color: #dc2626;
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(220, 38, 38, 0.3);
+        }
+        .section-title.present { color: #10b981; border-bottom-color: rgba(16, 185, 129, 0.3); }
+        .section-title.motivat { color: #f59e0b; border-bottom-color: rgba(245, 158, 11, 0.3); }
+        .section-title.absent { color: #ef4444; border-bottom-color: rgba(239, 68, 68, 0.3); }
+        .participant-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .participant-item {
+            background: rgba(255,255,255,0.05);
+            padding: 12px 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .participant-item .grad { color: #dc2626; font-weight: 600; }
+        .participant-item .nume { color: #fff; }
+        .participant-item .status { font-size: 0.9em; color: #9ca3af; }
+        .loading, .error {
+            text-align: center;
+            padding: 50px 20px;
+            color: #9ca3af;
+            font-size: 1.2em;
+        }
+        .error { color: #ef4444; }
+        .count-badge {
+            display: inline-block;
+            background: rgba(220, 38, 38, 0.3);
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn">← Înapoi la Dashboard</a>
+        <h1 class="page-title">📅 Ultimul Antrenament</h1>
+        <div id="dateBadge" class="date-badge">Se încarcă...</div>
+        <div id="loadingContainer" class="loading">Se încarcă datele...</div>
+        <div id="contentContainer" style="display: none;">
+            <div class="section">
+                <div class="section-title present">✅ Prezenți (P) <span class="count-badge" id="countPrezenti">0</span></div>
+                <div id="listPrezenti" class="participant-list"></div>
+            </div>
+            <div class="section">
+                <div class="section-title motivat">📝 Motivați (M) <span class="count-badge" id="countMotivati">0</span></div>
+                <div id="listMotivati" class="participant-list"></div>
+            </div>
+            <div class="section">
+                <div class="section-title absent">❌ Absenți <span class="count-badge" id="countAbsenti">0</span></div>
+                <div id="listAbsenti" class="participant-list"></div>
+            </div>
+        </div>
+        <div id="errorContainer" class="error" style="display: none;"></div>
+    </div>
+    <script>
+        const SHEET_ID = '1DZZLXB6rm0lXSqLtMdfFXNRWi9Gh9N8oKbXMM63FwQA';
+        const GID = '1161792968';
+
+        async function fetchData() {
+            const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${GID}&tqx=out:json`;
+            const response = await fetch(url);
+            const text = await response.text();
+            const jsonMatch = text.match(/google\.visualization\.Query\.setResponse\((.*)\);/s);
+            if (!jsonMatch) throw new Error('Format invalid');
+            const data = JSON.parse(jsonMatch[1]);
+            if (data.status === 'error') throw new Error('Eroare Google Sheets');
+            return data;
+        }
+
+        function parseHeaderDate(cellValue) {
+            if (!cellValue) return null;
+            const str = String(cellValue);
+            let columnDate = null;
+            const monthMap = {
+                'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
+                'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11,
+                'ian': 0, 'feb': 1, 'mar': 2, 'apr': 3, 'mai': 4, 'iun': 5,
+                'iul': 6, 'aug': 7, 'sep': 8, 'oct': 9, 'nov': 10, 'dec': 11
+            };
+            let m = str.match(/(\d{1,2})-(\w{3})-(\d{4})/);
+            if (m) columnDate = new Date(parseInt(m[3]), monthMap[m[2]] != null ? monthMap[m[2]] : 0, parseInt(m[1]));
+            if (!columnDate) { m = str.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/); if (m) columnDate = new Date(parseInt(m[3]), parseInt(m[2]) - 1, parseInt(m[1])); }
+            if (!columnDate) { m = str.match(/(\d{4})-(\d{1,2})-(\d{1,2})/); if (m) columnDate = new Date(parseInt(m[1]), parseInt(m[2]) - 1, parseInt(m[3])); }
+            if (!columnDate) { m = str.match(/Date\((\d{4}),\s*(\d{1,2}),\s*(\d{1,2})\)/); if (m) columnDate = new Date(parseInt(m[1]), parseInt(m[2]), parseInt(m[3])); }
+            if (!columnDate && /^\d{5}$/.test(str)) {
+                const n = parseInt(str);
+                const epoch = new Date(1899, 11, 30, 0, 0, 0, 0);
+                columnDate = new Date(epoch.getTime() + n * 24 * 60 * 60 * 1000);
+                columnDate = new Date(columnDate.getFullYear(), columnDate.getMonth(), columnDate.getDate(), 0, 0, 0, 0);
+            }
+            if (columnDate) columnDate.setHours(0, 0, 0, 0);
+            return columnDate;
+        }
+
+        function buildLists(jsonData) {
+            const rows = jsonData.table.rows;
+            const headerRow = rows[0];
+            if (!headerRow || !headerRow.c) return;
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            let lastTrainingColumnIndex = -1;
+            let lastTrainingDate = null;
+
+            for (let colIndex = 12; colIndex < headerRow.c.length; colIndex++) {
+                let isSeminar = false;
+                for (let r = 0; r < rows.length; r++) {
+                    const c = rows[r].c[colIndex];
+                    if (c && c.v && String(c.v).toLowerCase().includes('seminar')) { isSeminar = true; break; }
+                }
+                if (isSeminar) continue;
+
+                const cell = headerRow.c[colIndex];
+                const cellValue = cell?.v != null ? String(cell.v) : (cell?.f ? String(cell.f) : '');
+                if (!cellValue) continue;
+
+                const columnDate = parseHeaderDate(cellValue);
+                if (columnDate && columnDate <= today && (!lastTrainingDate || columnDate > lastTrainingDate)) {
+                    lastTrainingDate = columnDate;
+                    lastTrainingColumnIndex = colIndex;
+                }
+            }
+
+            const prezenti = [];
+            const motivati = [];
+            const absenti = [];
+
+            for (let i = 1; i < rows.length; i++) {
+                const cells = rows[i].c;
+                const grad = cells[0]?.v ? String(cells[0].v).trim() : '';
+                const nume = cells[1]?.v ? String(cells[1].v).trim() : '';
+                if (nume.toLowerCase().includes('prezent')) break;
+                if (!nume || !grad) continue;
+
+                let status = '';
+                if (lastTrainingColumnIndex !== -1 && cells[lastTrainingColumnIndex]?.v)
+                    status = String(cells[lastTrainingColumnIndex].v).trim().toUpperCase();
+
+                const item = { grad, nume };
+                if (status === 'P') prezenti.push(item);
+                else if (status === 'M') motivati.push(item);
+                else absenti.push(item);
+            }
+
+            const dateStr = lastTrainingDate ? lastTrainingDate.toLocaleDateString('ro-RO', { day: '2-digit', month: 'long', year: 'numeric' }) : 'Niciun antrenament';
+            document.getElementById('dateBadge').textContent = dateStr;
+            document.getElementById('countPrezenti').textContent = prezenti.length;
+            document.getElementById('countMotivati').textContent = motivati.length;
+            document.getElementById('countAbsenti').textContent = absenti.length;
+
+            const renderList = (arr, containerId) => {
+                const el = document.getElementById(containerId);
+                el.innerHTML = arr.length === 0 ? '<div style="color:#9ca3af;padding:15px;">Niciun participant</div>' : arr.map(p => `
+                    <div class="participant-item">
+                        <span><span class="grad">${p.grad}</span> – ${p.nume}</span>
+                    </div>
+                `).join('');
+            };
+            renderList(prezenti, 'listPrezenti');
+            renderList(motivati, 'listMotivati');
+            renderList(absenti, 'listAbsenti');
+
+            document.getElementById('loadingContainer').style.display = 'none';
+            document.getElementById('contentContainer').style.display = 'block';
+        }
+
+        (async function init() {
+            try {
+                const data = await fetchData();
+                buildLists(data);
+            } catch (err) {
+                document.getElementById('loadingContainer').style.display = 'none';
+                document.getElementById('errorContainer').style.display = 'block';
+                document.getElementById('errorContainer').textContent = 'Eroare la încărcarea datelor: ' + err.message;
+            }
+        })();
+    </script>
+</body>
+</html>
