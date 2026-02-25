@@ -300,6 +300,8 @@
         }
         .parcurs-value.ok { color: #10b981; }
         .parcurs-value.missing { color: #ef4444; }
+        .parcurs-necesar { color: #6b7280; font-size: 0.85em; }
+        .parcurs-item.parcurs-info { border-left-color: rgba(156, 163, 175, 0.4); }
 
         .info-value.warning {
             color: #f59e0b;
@@ -459,7 +461,7 @@
                     <div class="section-title">
                         🎯 Parcursul până la examenul următor
                     </div>
-                    <p style="color: #9ca3af; font-size: 0.9em; margin-bottom: 16px;">Criteriile care intră în calculul „Ready for next exam?” (coloana L din sheet):</p>
+                    <p style="color: #9ca3af; font-size: 0.9em; margin-bottom: 16px;">Criteriile din formula L: Cotiz=NSSM=Adev=Y; Ore≥Utils!H30; S#≥Utils!F30; SI#≥Utils!G30; luni de la LastExam≥Utils!I30.</p>
                     <div class="info-grid" style="margin-bottom: 12px;">
                         <div class="info-item">
                             <div class="info-label">Rezultat (L)</div>
@@ -468,34 +470,45 @@
                     </div>
                     <div class="parcurs-checklist">
                         <div class="parcurs-item">
-                            <span class="parcurs-label">Zile practică</span>
+                            <span class="parcurs-label">Cotizație (C)</span>
+                            <span class="parcurs-value" id="parcursCotizatie">-</span>
+                            <span class="parcurs-necesar">necesar: Y</span>
+                        </div>
+                        <div class="parcurs-item">
+                            <span class="parcurs-label">NSSM (D)</span>
+                            <span class="parcurs-value" id="parcursNSSM">-</span>
+                            <span class="parcurs-necesar">necesar: Y</span>
+                        </div>
+                        <div class="parcurs-item">
+                            <span class="parcurs-label">Adeverință medicală (E)</span>
+                            <span class="parcurs-value" id="parcursAdeverinta">-</span>
+                            <span class="parcurs-necesar">necesar: Y</span>
+                        </div>
+                        <div class="parcurs-item">
+                            <span class="parcurs-label">Ore practică (I)</span>
+                            <span class="parcurs-value" id="parcursOre">-</span>
+                            <span class="parcurs-necesar" id="parcursOreNecesar">necesar: ?</span>
+                        </div>
+                        <div class="parcurs-item">
+                            <span class="parcurs-label">Seminare naționale (F S#)</span>
+                            <span class="parcurs-value" id="parcursSeminareNationale">-</span>
+                            <span class="parcurs-necesar" id="parcursSeminareNatNecesar">necesar: ?</span>
+                        </div>
+                        <div class="parcurs-item">
+                            <span class="parcurs-label">Seminare internaționale (G SI#)</span>
+                            <span class="parcurs-value" id="parcursSeminareInternationale">-</span>
+                            <span class="parcurs-necesar" id="parcursSeminareIntNecesar">necesar: ?</span>
+                        </div>
+                        <div class="parcurs-item">
+                            <span class="parcurs-label">Luni de la ultimul examen (K)</span>
+                            <span class="parcurs-value" id="parcursLuniExamen">-</span>
+                            <span class="parcurs-necesar" id="parcursLuniNecesar">necesar: ?</span>
+                        </div>
+                        <div class="parcurs-item parcurs-info">
+                            <span class="parcurs-label">Zile practică (H, informativ)</span>
                             <span class="parcurs-value" id="parcursZile">-</span>
                         </div>
-                        <div class="parcurs-item">
-                            <span class="parcurs-label">Ore practică</span>
-                            <span class="parcurs-value" id="parcursOre">-</span>
-                        </div>
-                        <div class="parcurs-item">
-                            <span class="parcurs-label">Seminare naționale (S#)</span>
-                            <span class="parcurs-value" id="parcursSeminareNationale">-</span>
-                        </div>
-                        <div class="parcurs-item">
-                            <span class="parcurs-label">Seminare internaționale (SI#)</span>
-                            <span class="parcurs-value" id="parcursSeminareInternationale">-</span>
-                        </div>
-                        <div class="parcurs-item">
-                            <span class="parcurs-label">Adeverință medicală</span>
-                            <span class="parcurs-value" id="parcursAdeverinta">-</span>
-                        </div>
-                        <div class="parcurs-item">
-                            <span class="parcurs-label">NSSM semnat</span>
-                            <span class="parcurs-value" id="parcursNSSM">-</span>
-                        </div>
-                        <div class="parcurs-item">
-                            <span class="parcurs-label">Avertizări (Avertis)</span>
-                            <span class="parcurs-value" id="parcursAvertizari">-</span>
-                        </div>
-                        <div class="parcurs-item">
+                        <div class="parcurs-item parcurs-info">
                             <span class="parcurs-label">Ultimul antrenament</span>
                             <span class="parcurs-value" id="parcursUltimulAntrenament">-</span>
                         </div>
@@ -538,6 +551,9 @@
         const SHEET_ID = '1DZZLXB6rm0lXSqLtMdfFXNRWi9Gh9N8oKbXMM63FwQA';
         const GID = '1161792968'; // Prezente2026
         const GID_2025 = '706451964'; // Prezente2025
+        // GID pentru tab-ul Utils (pentru formula L: F30, G30, H30, I30). Deschide Utils în browser și copiază gid din URL.
+        const UTILS_GID = '';
+        const REQUIRED_PARCURS_FALLBACK = { oreMin: 100, seminareNatMin: 1, seminareIntMin: 0, luniMin: 12 };
         
         // Get logged in user from localStorage
         const LOGGED_IN_USER = localStorage.getItem('logged_in_user');
@@ -593,32 +609,77 @@
             }
         });
 
+        async function fetchUtilsRequired() {
+            if (!UTILS_GID) return REQUIRED_PARCURS_FALLBACK;
+            try {
+                const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${UTILS_GID}&tqx=out:json`;
+                const response = await fetch(url);
+                const text = await response.text();
+                const jsonMatch = text.match(/google\.visualization\.Query\.setResponse\((.*)\);/s);
+                if (!jsonMatch) return REQUIRED_PARCURS_FALLBACK;
+                const json = JSON.parse(jsonMatch[1]);
+                if (json.status === 'error') return REQUIRED_PARCURS_FALLBACK;
+                const rows = json.table.rows;
+                const row30 = rows[29];
+                if (!row30 || !row30.c) return REQUIRED_PARCURS_FALLBACK;
+                const c = row30.c;
+                const num = (i) => (c[i] && c[i].v != null) ? Number(c[i].v) : null;
+                return {
+                    oreMin: num(7) ?? REQUIRED_PARCURS_FALLBACK.oreMin,
+                    seminareNatMin: num(5) ?? REQUIRED_PARCURS_FALLBACK.seminareNatMin,
+                    seminareIntMin: num(6) ?? REQUIRED_PARCURS_FALLBACK.seminareIntMin,
+                    luniMin: num(8) ?? REQUIRED_PARCURS_FALLBACK.luniMin
+                };
+            } catch (e) {
+                return REQUIRED_PARCURS_FALLBACK;
+            }
+        }
+
         async function fetchProfileData() {
             try {
                 console.log('📥 Fetching profile data...');
-                
-                const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${GID}&tqx=out:json`;
-                const response = await fetch(url);
-                const text = await response.text();
-                
-                const jsonMatch = text.match(/google\.visualization\.Query\.setResponse\((.*)\);/s);
-                if (!jsonMatch) {
-                    throw new Error('Invalid format from Google Sheets');
-                }
-                
-                const jsonData = JSON.parse(jsonMatch[1]);
-                
-                if (jsonData.status === 'error') {
-                    throw new Error('Error from Google Sheets');
-                }
-                
+                const [jsonData, required] = await Promise.all([
+                    (async () => {
+                        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${GID}&tqx=out:json`;
+                        const response = await fetch(url);
+                        const text = await response.text();
+                        const jsonMatch = text.match(/google\.visualization\.Query\.setResponse\((.*)\);/s);
+                        if (!jsonMatch) throw new Error('Invalid format from Google Sheets');
+                        const jsonData = JSON.parse(jsonMatch[1]);
+                        if (jsonData.status === 'error') throw new Error('Error from Google Sheets');
+                        return jsonData;
+                    })(),
+                    fetchUtilsRequired()
+                ]);
                 console.log('✅ Data received');
-                processProfileData(jsonData);
-                
+                processProfileData(jsonData, required);
             } catch (error) {
                 console.error('Error:', error);
                 document.getElementById('loadingContainer').innerHTML = '<div style="color: #ef4444; text-align: center; padding: 50px;">⚠️ Eroare la încărcarea profilului</div>';
             }
+        }
+
+        function parseLastExamToDate(rawVal) {
+            if (rawVal == null || rawVal === '') return null;
+            const s = String(rawVal).trim();
+            if (/^\d{5}$/.test(s)) {
+                const n = parseInt(s);
+                const epoch = new Date(1899, 11, 30, 0, 0, 0, 0);
+                return new Date(epoch.getTime() + n * 24 * 60 * 60 * 1000);
+            }
+            if (s.match(/Date\((\d{4}),\s*(\d{1,2}),\s*(\d{1,2})\)/)) {
+                const m = s.match(/Date\((\d{4}),\s*(\d{1,2}),\s*(\d{1,2})\)/);
+                return new Date(parseInt(m[1]), parseInt(m[2]), parseInt(m[3]));
+            }
+            const d = new Date(s);
+            return isNaN(d.getTime()) ? null : d;
+        }
+
+        function monthsBetween(fromDate, toDate) {
+            if (!fromDate || !toDate) return null;
+            const from = new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate());
+            const to = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate());
+            return (to.getFullYear() - from.getFullYear()) * 12 + (to.getMonth() - from.getMonth());
         }
 
         function formatDateForLastExam(dateStr) {
@@ -670,7 +731,8 @@
             return dateStr;
         }
 
-        function processProfileData(jsonData) {
+        function processProfileData(jsonData, required) {
+            required = required || REQUIRED_PARCURS_FALLBACK;
             const rows = jsonData.table.rows;
             const today = new Date();
             today.setHours(0, 0, 0, 0);
@@ -700,6 +762,9 @@
                     const orePractica = cells[8]?.v ? String(cells[8].v) : '0';
                     const avertis = cells[9]?.v != null ? String(cells[9].v).trim() : '0'; // Column J Avertis
                     const readyForExam = cells[11]?.v ? String(cells[11].v).trim().toUpperCase() : 'N';
+                    const lastExamRaw = cells[10]?.v;
+                    const lastExamDate = parseLastExamToDate(lastExamRaw);
+                    const luniDeLaExamen = lastExamDate != null ? monthsBetween(lastExamDate, new Date()) : null;
                     
                     // Find last training date
                     let lastTrainingDate = null;
@@ -824,7 +889,8 @@
                         adeverintaElement.classList.add('error');
                     }
                     
-                    // Parcursul până la examenul următor (criteriile din coloana L)
+                    // Parcursul până la examenul următor (formula L: C,D,E=Y; I>=H30; F>=F30; G>=G30; luni>=I30)
+                    const r = required;
                     const readyParcursEl = document.getElementById('readyForExamParcurs');
                     if (readyForExam === 'Y') {
                         readyParcursEl.textContent = '✓ Pregătit';
@@ -833,18 +899,37 @@
                         readyParcursEl.textContent = '✗ Nepregătit';
                         readyParcursEl.classList.add('error');
                     }
-                    document.getElementById('parcursZile').textContent = zilePractica;
-                    document.getElementById('parcursOre').textContent = orePractica;
-                    document.getElementById('parcursSeminareNationale').textContent = seminareNationale;
-                    document.getElementById('parcursSeminareInternationale').textContent = seminareInternationale;
-                    document.getElementById('parcursAvertizari').textContent = avertis;
-                    document.getElementById('parcursUltimulAntrenament').textContent = lastTrainingDateStr;
+                    const setParcursCompare = (actualNum, necesarNum, elId, necesarElId, suf) => {
+                        const a = actualNum != null ? Number(actualNum) : NaN;
+                        const n = necesarNum;
+                        const el = document.getElementById(elId);
+                        const ne = document.getElementById(necesarElId);
+                        if (ne) ne.textContent = 'necesar: ' + n + (suf || '');
+                        if (isNaN(a)) { el.textContent = '-'; return; }
+                        el.textContent = a + ' / ' + n + (suf || '');
+                        el.className = 'parcurs-value ' + (a >= n ? 'ok' : 'missing');
+                    };
+                    const setParcursYN = (val, elId) => {
+                        const el = document.getElementById(elId);
+                        const ok = val === 'Y';
+                        el.textContent = ok ? '✓ Da' : '✗ Nu';
+                        el.className = 'parcurs-value ' + (ok ? 'ok' : 'missing');
+                    };
+                    setParcursYN(cotizatie, 'parcursCotizatie');
+                    setParcursYN(nssm, 'parcursNSSM');
                     const parcursAdv = document.getElementById('parcursAdeverinta');
-                    parcursAdv.textContent = adeverinta === 'Y' ? '✓ Valabilă' : '✗ Lipsă';
+                    parcursAdv.textContent = adeverinta === 'Y' ? '✓ Da' : '✗ Nu';
                     parcursAdv.className = 'parcurs-value ' + (adeverinta === 'Y' ? 'ok' : 'missing');
-                    const parcursNssm = document.getElementById('parcursNSSM');
-                    parcursNssm.textContent = nssm === 'Y' ? '✓ Semnat' : '✗ Nesemnat';
-                    parcursNssm.className = 'parcurs-value ' + (nssm === 'Y' ? 'ok' : 'missing');
+                    setParcursCompare(orePractica, r.oreMin, 'parcursOre', 'parcursOreNecesar', ' ore');
+                    setParcursCompare(seminareNationale, r.seminareNatMin, 'parcursSeminareNationale', 'parcursSeminareNatNecesar', '');
+                    setParcursCompare(seminareInternationale, r.seminareIntMin, 'parcursSeminareInternationale', 'parcursSeminareIntNecesar', '');
+                    const luniStr = luniDeLaExamen != null ? String(luniDeLaExamen) : '-';
+                    document.getElementById('parcursLuniExamen').textContent = luniStr + (luniDeLaExamen != null ? ' luni' : '');
+                    document.getElementById('parcursLuniNecesar').textContent = 'necesar: ' + r.luniMin + ' luni';
+                    const parcursLuniEl = document.getElementById('parcursLuniExamen');
+                    if (luniDeLaExamen != null) parcursLuniEl.className = 'parcurs-value ' + (luniDeLaExamen >= r.luniMin ? 'ok' : 'missing');
+                    document.getElementById('parcursZile').textContent = zilePractica;
+                    document.getElementById('parcursUltimulAntrenament').textContent = lastTrainingDateStr;
                     
                     // Find and display seminars for this user (from both 2025 and 2026)
                     displayUserSeminarsFromBothSheets(nume);
