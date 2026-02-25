@@ -439,7 +439,7 @@
 
                 <div class="info-section">
                     <div class="section-title">
-                        🎯 Parcursul până la examenul următor
+                        Ești pregătit pentru următorul examen de grad?
                     </div>
                     <div class="info-grid" style="margin-bottom: 12px;">
                         <div class="info-item">
@@ -449,39 +449,32 @@
                     </div>
                     <div class="parcurs-checklist">
                         <div class="parcurs-item">
-                            <span class="parcurs-label">Cotizație</span>
-                            <span class="parcurs-value" id="parcursCotizatie">-</span>
-                            <span class="parcurs-necesar">necesar: Y</span>
-                        </div>
-                        <div class="parcurs-item">
-                            <span class="parcurs-label">NSSM</span>
-                            <span class="parcurs-value" id="parcursNSSM">-</span>
-                            <span class="parcurs-necesar">necesar: Y</span>
-                        </div>
-                        <div class="parcurs-item">
-                            <span class="parcurs-label">Adeverință medicală</span>
-                            <span class="parcurs-value" id="parcursAdeverinta">-</span>
-                            <span class="parcurs-necesar">necesar: Y</span>
-                        </div>
-                        <div class="parcurs-item">
                             <span class="parcurs-label">Ore practică</span>
                             <span class="parcurs-value" id="parcursOre">-</span>
-                            <span class="parcurs-necesar" id="parcursOreNecesar">necesar: ?</span>
-                        </div>
-                        <div class="parcurs-item">
-                            <span class="parcurs-label">Seminare naționale</span>
-                            <span class="parcurs-value" id="parcursSeminareNationale">-</span>
-                            <span class="parcurs-necesar" id="parcursSeminareNatNecesar">necesar: ?</span>
-                        </div>
-                        <div class="parcurs-item">
-                            <span class="parcurs-label">Seminare internaționale</span>
-                            <span class="parcurs-value" id="parcursSeminareInternationale">-</span>
-                            <span class="parcurs-necesar" id="parcursSeminareIntNecesar">necesar: ?</span>
                         </div>
                         <div class="parcurs-item">
                             <span class="parcurs-label">Luni de la ultimul examen</span>
                             <span class="parcurs-value" id="parcursLuniExamen">-</span>
-                            <span class="parcurs-necesar" id="parcursLuniNecesar">necesar: ?</span>
+                        </div>
+                        <div class="parcurs-item">
+                            <span class="parcurs-label">Prezență la Seminare naționale</span>
+                            <span class="parcurs-value" id="parcursSeminareNationale">-</span>
+                        </div>
+                        <div class="parcurs-item">
+                            <span class="parcurs-label">Prezență la Seminare internaționale</span>
+                            <span class="parcurs-value" id="parcursSeminareInternationale">-</span>
+                        </div>
+                        <div class="parcurs-item">
+                            <span class="parcurs-label">Adeverință medicală</span>
+                            <span class="parcurs-value" id="parcursAdeverinta">-</span>
+                        </div>
+                        <div class="parcurs-item">
+                            <span class="parcurs-label">NSSM</span>
+                            <span class="parcurs-value" id="parcursNSSM">-</span>
+                        </div>
+                        <div class="parcurs-item">
+                            <span class="parcurs-label">Cotizație Mirai Dojo (lunar) și FRAA (anual)</span>
+                            <span class="parcurs-value" id="parcursCotizatie">-</span>
                         </div>
                         <div class="parcurs-item parcurs-info">
                             <span class="parcurs-label">Zile practică</span>
@@ -604,10 +597,10 @@
                 const c = row30.c;
                 const num = (i) => (c[i] && c[i].v != null) ? Number(c[i].v) : null;
                 return {
-                    oreMin: num(7) ?? REQUIRED_PARCURS_FALLBACK.oreMin,
-                    seminareNatMin: num(5) ?? REQUIRED_PARCURS_FALLBACK.seminareNatMin,
-                    seminareIntMin: num(6) ?? REQUIRED_PARCURS_FALLBACK.seminareIntMin,
-                    luniMin: num(8) ?? REQUIRED_PARCURS_FALLBACK.luniMin
+                    oreMin: num(7) ?? REQUIRED_PARCURS_FALLBACK.oreMin,           // Utils!H30
+                    seminareNatMin: num(5) ?? REQUIRED_PARCURS_FALLBACK.seminareNatMin, // Utils!F30
+                    seminareIntMin: num(6) ?? REQUIRED_PARCURS_FALLBACK.seminareIntMin, // Utils!G30 (seminare internaționale, de la G30 încolo)
+                    luniMin: num(8) ?? REQUIRED_PARCURS_FALLBACK.luniMin           // Utils!I30
                 };
             } catch (e) {
                 return REQUIRED_PARCURS_FALLBACK;
@@ -874,14 +867,12 @@
                         readyParcursEl.textContent = '✗ Nepregătit';
                         readyParcursEl.classList.add('error');
                     }
-                    const setParcursCompare = (actualNum, necesarNum, elId, necesarElId, suf) => {
+                    const setParcursCompare = (actualNum, necesarNum, elId, suf) => {
                         const a = actualNum != null ? Number(actualNum) : NaN;
                         const n = necesarNum;
                         const el = document.getElementById(elId);
-                        const ne = document.getElementById(necesarElId);
-                        if (ne) ne.textContent = 'necesar: ' + n + (suf || '');
                         if (isNaN(a)) { el.textContent = '-'; return; }
-                        el.textContent = a + ' / ' + n + (suf || '');
+                        el.textContent = a + (suf || '');
                         el.className = 'parcurs-value ' + (a >= n ? 'ok' : 'missing');
                     };
                     const setParcursYN = (val, elId) => {
@@ -890,19 +881,18 @@
                         el.textContent = ok ? '✓ Da' : '✗ Nu';
                         el.className = 'parcurs-value ' + (ok ? 'ok' : 'missing');
                     };
-                    setParcursYN(cotizatie, 'parcursCotizatie');
-                    setParcursYN(nssm, 'parcursNSSM');
+                    setParcursCompare(orePractica, r.oreMin, 'parcursOre', ' ore');
+                    const luniStr = luniDeLaExamen != null ? String(luniDeLaExamen) : '-';
+                    document.getElementById('parcursLuniExamen').textContent = luniStr + (luniDeLaExamen != null ? ' luni' : '');
+                    const parcursLuniEl = document.getElementById('parcursLuniExamen');
+                    if (luniDeLaExamen != null) parcursLuniEl.className = 'parcurs-value ' + (luniDeLaExamen >= r.luniMin ? 'ok' : 'missing');
+                    setParcursCompare(seminareNationale, r.seminareNatMin, 'parcursSeminareNationale', '');
+                    setParcursCompare(seminareInternationale, r.seminareIntMin, 'parcursSeminareInternationale', '');
                     const parcursAdv = document.getElementById('parcursAdeverinta');
                     parcursAdv.textContent = adeverinta === 'Y' ? '✓ Da' : '✗ Nu';
                     parcursAdv.className = 'parcurs-value ' + (adeverinta === 'Y' ? 'ok' : 'missing');
-                    setParcursCompare(orePractica, r.oreMin, 'parcursOre', 'parcursOreNecesar', ' ore');
-                    setParcursCompare(seminareNationale, r.seminareNatMin, 'parcursSeminareNationale', 'parcursSeminareNatNecesar', '');
-                    setParcursCompare(seminareInternationale, r.seminareIntMin, 'parcursSeminareInternationale', 'parcursSeminareIntNecesar', '');
-                    const luniStr = luniDeLaExamen != null ? String(luniDeLaExamen) : '-';
-                    document.getElementById('parcursLuniExamen').textContent = luniStr + (luniDeLaExamen != null ? ' luni' : '');
-                    document.getElementById('parcursLuniNecesar').textContent = 'necesar: ' + r.luniMin + ' luni';
-                    const parcursLuniEl = document.getElementById('parcursLuniExamen');
-                    if (luniDeLaExamen != null) parcursLuniEl.className = 'parcurs-value ' + (luniDeLaExamen >= r.luniMin ? 'ok' : 'missing');
+                    setParcursYN(nssm, 'parcursNSSM');
+                    setParcursYN(cotizatie, 'parcursCotizatie');
                     document.getElementById('parcursZile').textContent = zilePractica;
                     document.getElementById('parcursUltimulAntrenament').textContent = lastTrainingDateStr;
                     
