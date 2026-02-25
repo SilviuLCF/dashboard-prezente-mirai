@@ -352,7 +352,6 @@
 <body>
     <div class="container">
         <div class="buttons-container">
-            <a href="index.html" class="back-btn">← Înapoi la Dashboard</a>
             <button class="logout-btn" onclick="handleLogout()">🚪 Logout</button>
         </div>
 
@@ -413,7 +412,7 @@
 
                 <div class="info-section">
                     <div class="section-title">
-                        📊 Statistici Practică
+                        📊 Statistici Practică de la ultimul examen
                     </div>
                     <div class="info-grid">
                         <div class="info-item">
@@ -427,17 +426,6 @@
                         <div class="info-item">
                             <div class="info-label">Ultimul Antrenament</div>
                             <div class="info-value" id="lastTraining">-</div>
-                        </div>
-                    </div>
-                    <div class="section-subtitle" style="margin-top: 20px; margin-bottom: 12px; color: #9ca3af; font-size: 0.95em; font-weight: 600;">Statistici practică de la ultimul examen</div>
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <div class="info-label">Zile de la ultimul examen</div>
-                            <div class="info-value" id="zilePracticaUltimulExamen">-</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">Ore de la ultimul examen</div>
-                            <div class="info-value" id="orePracticaUltimulExamen">-</div>
                         </div>
                     </div>
                 </div>
@@ -721,8 +709,6 @@
                     document.getElementById('zilePractica').textContent = zilePractica;
                     document.getElementById('orePractica').textContent = orePractica;
                     document.getElementById('lastTraining').textContent = lastTrainingDateStr;
-                    document.getElementById('zilePracticaUltimulExamen').textContent = zilePractica;
-                    document.getElementById('orePracticaUltimulExamen').textContent = orePractica;
                     
                     const readyElement = document.getElementById('readyForExam');
                     if (readyForExam === 'Y') {
