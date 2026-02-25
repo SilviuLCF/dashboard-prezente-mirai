@@ -598,18 +598,24 @@
                 const c = row30.c;
                 const num = (i) => (c[i] && c[i].v != null) ? Number(c[i].v) : null;
                 const seminareIntByGrade = {};
+                const gradesOrdered = [];
                 for (let i = 28; i <= 48 && i < rows.length; i++) {
                     const r = rows[i];
                     if (!r || !r.c) continue;
                     const grade = r.c[0]?.v != null ? String(r.c[0].v).trim() : '';
                     const req = r.c[6]?.v != null ? Number(r.c[6].v) : null;
-                    if (grade && req != null) seminareIntByGrade[grade.toUpperCase()] = req;
+                    if (grade) {
+                        const g = grade.toUpperCase();
+                        gradesOrdered.push(g);
+                        if (req != null) seminareIntByGrade[g] = req;
+                    }
                 }
                 return {
                     oreMin: num(7) ?? REQUIRED_PARCURS_FALLBACK.oreMin,
                     seminareNatMin: num(5) ?? REQUIRED_PARCURS_FALLBACK.seminareNatMin,
                     seminareIntMin: num(6) ?? REQUIRED_PARCURS_FALLBACK.seminareIntMin,
                     seminareIntByGrade,
+                    gradesOrdered,
                     luniMin: num(8) ?? REQUIRED_PARCURS_FALLBACK.luniMin
                 };
             } catch (e) {
@@ -900,8 +906,13 @@
                         parcursLuniEl.textContent = '-';
                     }
                     setParcursCompare(seminareNationale, r.seminareNatMin, 'parcursSeminareNationale', '');
-                    let seminareIntNecesar = (r.seminareIntByGrade && grad) ? (r.seminareIntByGrade[grad.toUpperCase()] ?? r.seminareIntMin) : r.seminareIntMin;
                     const g = (grad || '').toUpperCase();
+                    let targetGrade = g;
+                    if (r.gradesOrdered && g) {
+                        const idx = r.gradesOrdered.indexOf(g);
+                        if (idx >= 0 && idx + 1 < r.gradesOrdered.length) targetGrade = r.gradesOrdered[idx + 1];
+                    }
+                    let seminareIntNecesar = (r.seminareIntByGrade && targetGrade) ? (r.seminareIntByGrade[targetGrade] ?? r.seminareIntMin) : r.seminareIntMin;
                     if (g === 'A1K' || g.endsWith('D')) seminareIntNecesar = Math.max(seminareIntNecesar, 1);
                     setParcursCompare(seminareInternationale, seminareIntNecesar, 'parcursSeminareInternationale', '');
                     const parcursAdv = document.getElementById('parcursAdeverinta');
