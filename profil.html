@@ -596,11 +596,20 @@
                 if (!row30 || !row30.c) return REQUIRED_PARCURS_FALLBACK;
                 const c = row30.c;
                 const num = (i) => (c[i] && c[i].v != null) ? Number(c[i].v) : null;
+                const seminareIntByGrade = {};
+                for (let i = 29; i <= 48 && i < rows.length; i++) {
+                    const r = rows[i];
+                    if (!r || !r.c) continue;
+                    const grade = r.c[0]?.v != null ? String(r.c[0].v).trim() : '';
+                    const req = r.c[6]?.v != null ? Number(r.c[6].v) : null;
+                    if (grade && req != null) seminareIntByGrade[grade.toUpperCase()] = req;
+                }
                 return {
-                    oreMin: num(7) ?? REQUIRED_PARCURS_FALLBACK.oreMin,           // Utils!H30
-                    seminareNatMin: num(5) ?? REQUIRED_PARCURS_FALLBACK.seminareNatMin, // Utils!F30
-                    seminareIntMin: num(6) ?? REQUIRED_PARCURS_FALLBACK.seminareIntMin, // Utils!G30 (seminare internaționale, de la G30 încolo)
-                    luniMin: num(8) ?? REQUIRED_PARCURS_FALLBACK.luniMin           // Utils!I30
+                    oreMin: num(7) ?? REQUIRED_PARCURS_FALLBACK.oreMin,
+                    seminareNatMin: num(5) ?? REQUIRED_PARCURS_FALLBACK.seminareNatMin,
+                    seminareIntMin: num(6) ?? REQUIRED_PARCURS_FALLBACK.seminareIntMin,
+                    seminareIntByGrade,
+                    luniMin: num(8) ?? REQUIRED_PARCURS_FALLBACK.luniMin
                 };
             } catch (e) {
                 return REQUIRED_PARCURS_FALLBACK;
@@ -890,7 +899,8 @@
                         parcursLuniEl.textContent = '-';
                     }
                     setParcursCompare(seminareNationale, r.seminareNatMin, 'parcursSeminareNationale', '');
-                    setParcursCompare(seminareInternationale, r.seminareIntMin, 'parcursSeminareInternationale', '');
+                    const seminareIntNecesar = (r.seminareIntByGrade && grad) ? (r.seminareIntByGrade[grad.toUpperCase()] ?? r.seminareIntMin) : r.seminareIntMin;
+                    setParcursCompare(seminareInternationale, seminareIntNecesar, 'parcursSeminareInternationale', '');
                     const parcursAdv = document.getElementById('parcursAdeverinta');
                     parcursAdv.textContent = adeverinta === 'Y' ? '✓ Da' : '✗ Nu';
                     parcursAdv.className = 'parcurs-value ' + (adeverinta === 'Y' ? 'ok' : 'missing');
