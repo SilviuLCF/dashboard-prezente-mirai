@@ -276,6 +276,31 @@
             color: #10b981;
         }
 
+        .parcurs-checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .parcurs-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            border-left: 3px solid rgba(220, 38, 38, 0.4);
+        }
+        .parcurs-label {
+            color: #9ca3af;
+            font-size: 0.95em;
+        }
+        .parcurs-value {
+            color: #fff;
+            font-weight: 600;
+        }
+        .parcurs-value.ok { color: #10b981; }
+        .parcurs-value.missing { color: #ef4444; }
+
         .info-value.warning {
             color: #f59e0b;
         }
@@ -426,6 +451,53 @@
                         <div class="info-item">
                             <div class="info-label">Ultimul Antrenament</div>
                             <div class="info-value" id="lastTraining">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <div class="section-title">
+                        🎯 Parcursul până la examenul următor
+                    </div>
+                    <p style="color: #9ca3af; font-size: 0.9em; margin-bottom: 16px;">Criteriile care intră în calculul „Ready for next exam?” (coloana L din sheet):</p>
+                    <div class="info-grid" style="margin-bottom: 12px;">
+                        <div class="info-item">
+                            <div class="info-label">Rezultat (L)</div>
+                            <div class="info-value" id="readyForExamParcurs">-</div>
+                        </div>
+                    </div>
+                    <div class="parcurs-checklist">
+                        <div class="parcurs-item">
+                            <span class="parcurs-label">Zile practică</span>
+                            <span class="parcurs-value" id="parcursZile">-</span>
+                        </div>
+                        <div class="parcurs-item">
+                            <span class="parcurs-label">Ore practică</span>
+                            <span class="parcurs-value" id="parcursOre">-</span>
+                        </div>
+                        <div class="parcurs-item">
+                            <span class="parcurs-label">Seminare naționale (S#)</span>
+                            <span class="parcurs-value" id="parcursSeminareNationale">-</span>
+                        </div>
+                        <div class="parcurs-item">
+                            <span class="parcurs-label">Seminare internaționale (SI#)</span>
+                            <span class="parcurs-value" id="parcursSeminareInternationale">-</span>
+                        </div>
+                        <div class="parcurs-item">
+                            <span class="parcurs-label">Adeverință medicală</span>
+                            <span class="parcurs-value" id="parcursAdeverinta">-</span>
+                        </div>
+                        <div class="parcurs-item">
+                            <span class="parcurs-label">NSSM semnat</span>
+                            <span class="parcurs-value" id="parcursNSSM">-</span>
+                        </div>
+                        <div class="parcurs-item">
+                            <span class="parcurs-label">Avertizări (Avertis)</span>
+                            <span class="parcurs-value" id="parcursAvertizari">-</span>
+                        </div>
+                        <div class="parcurs-item">
+                            <span class="parcurs-label">Ultimul antrenament</span>
+                            <span class="parcurs-value" id="parcursUltimulAntrenament">-</span>
                         </div>
                     </div>
                 </div>
@@ -621,9 +693,12 @@
                     const cotizatie = cells[2]?.v ? String(cells[2].v).trim().toUpperCase() : 'N'; // Column C
                     const nssm = cells[3]?.v ? String(cells[3].v).trim().toUpperCase() : 'N'; // Column D
                     const adeverinta = cells[4]?.v ? String(cells[4].v).trim().toUpperCase() : 'N'; // Column E
+                    const seminareNationale = cells[5]?.v != null ? String(cells[5].v).trim() : '-'; // Column F S#
+                    const seminareInternationale = cells[6]?.v != null ? String(cells[6].v).trim() : '-'; // Column G SI#
                     const lastExam = cells[10]?.v ? formatDateForLastExam(String(cells[10].v)) : 'N/A';
                     const zilePractica = cells[7]?.v ? String(cells[7].v) : '0';
                     const orePractica = cells[8]?.v ? String(cells[8].v) : '0';
+                    const avertis = cells[9]?.v != null ? String(cells[9].v).trim() : '0'; // Column J Avertis
                     const readyForExam = cells[11]?.v ? String(cells[11].v).trim().toUpperCase() : 'N';
                     
                     // Find last training date
@@ -748,6 +823,28 @@
                         adeverintaElement.textContent = '✗ Lipsă';
                         adeverintaElement.classList.add('error');
                     }
+                    
+                    // Parcursul până la examenul următor (criteriile din coloana L)
+                    const readyParcursEl = document.getElementById('readyForExamParcurs');
+                    if (readyForExam === 'Y') {
+                        readyParcursEl.textContent = '✓ Pregătit';
+                        readyParcursEl.classList.add('success');
+                    } else {
+                        readyParcursEl.textContent = '✗ Nepregătit';
+                        readyParcursEl.classList.add('error');
+                    }
+                    document.getElementById('parcursZile').textContent = zilePractica;
+                    document.getElementById('parcursOre').textContent = orePractica;
+                    document.getElementById('parcursSeminareNationale').textContent = seminareNationale;
+                    document.getElementById('parcursSeminareInternationale').textContent = seminareInternationale;
+                    document.getElementById('parcursAvertizari').textContent = avertis;
+                    document.getElementById('parcursUltimulAntrenament').textContent = lastTrainingDateStr;
+                    const parcursAdv = document.getElementById('parcursAdeverinta');
+                    parcursAdv.textContent = adeverinta === 'Y' ? '✓ Valabilă' : '✗ Lipsă';
+                    parcursAdv.className = 'parcurs-value ' + (adeverinta === 'Y' ? 'ok' : 'missing');
+                    const parcursNssm = document.getElementById('parcursNSSM');
+                    parcursNssm.textContent = nssm === 'Y' ? '✓ Semnat' : '✗ Nesemnat';
+                    parcursNssm.className = 'parcurs-value ' + (nssm === 'Y' ? 'ok' : 'missing');
                     
                     // Find and display seminars for this user (from both 2025 and 2026)
                     displayUserSeminarsFromBothSheets(nume);
