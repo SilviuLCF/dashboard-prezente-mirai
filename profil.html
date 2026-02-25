@@ -439,73 +439,52 @@
 
                 <div class="info-section">
                     <div class="section-title">
-                        📊 Statistici Practică de la ultimul examen
-                    </div>
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <div class="info-label">Zile Practică</div>
-                            <div class="info-value" id="zilePractica">-</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">Ore Practică</div>
-                            <div class="info-value" id="orePractica">-</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">Ultimul Antrenament</div>
-                            <div class="info-value" id="lastTraining">-</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="info-section">
-                    <div class="section-title">
                         🎯 Parcursul până la examenul următor
                     </div>
-                    <p style="color: #9ca3af; font-size: 0.9em; margin-bottom: 16px;">Criteriile din formula L: Cotiz=NSSM=Adev=Y; Ore≥Utils!H30; S#≥Utils!F30; SI#≥Utils!G30; luni de la LastExam≥Utils!I30.</p>
                     <div class="info-grid" style="margin-bottom: 12px;">
                         <div class="info-item">
-                            <div class="info-label">Rezultat (L)</div>
+                            <div class="info-label">Rezultat</div>
                             <div class="info-value" id="readyForExamParcurs">-</div>
                         </div>
                     </div>
                     <div class="parcurs-checklist">
                         <div class="parcurs-item">
-                            <span class="parcurs-label">Cotizație (C)</span>
+                            <span class="parcurs-label">Cotizație</span>
                             <span class="parcurs-value" id="parcursCotizatie">-</span>
                             <span class="parcurs-necesar">necesar: Y</span>
                         </div>
                         <div class="parcurs-item">
-                            <span class="parcurs-label">NSSM (D)</span>
+                            <span class="parcurs-label">NSSM</span>
                             <span class="parcurs-value" id="parcursNSSM">-</span>
                             <span class="parcurs-necesar">necesar: Y</span>
                         </div>
                         <div class="parcurs-item">
-                            <span class="parcurs-label">Adeverință medicală (E)</span>
+                            <span class="parcurs-label">Adeverință medicală</span>
                             <span class="parcurs-value" id="parcursAdeverinta">-</span>
                             <span class="parcurs-necesar">necesar: Y</span>
                         </div>
                         <div class="parcurs-item">
-                            <span class="parcurs-label">Ore practică (I)</span>
+                            <span class="parcurs-label">Ore practică</span>
                             <span class="parcurs-value" id="parcursOre">-</span>
                             <span class="parcurs-necesar" id="parcursOreNecesar">necesar: ?</span>
                         </div>
                         <div class="parcurs-item">
-                            <span class="parcurs-label">Seminare naționale (F S#)</span>
+                            <span class="parcurs-label">Seminare naționale</span>
                             <span class="parcurs-value" id="parcursSeminareNationale">-</span>
                             <span class="parcurs-necesar" id="parcursSeminareNatNecesar">necesar: ?</span>
                         </div>
                         <div class="parcurs-item">
-                            <span class="parcurs-label">Seminare internaționale (G SI#)</span>
+                            <span class="parcurs-label">Seminare internaționale</span>
                             <span class="parcurs-value" id="parcursSeminareInternationale">-</span>
                             <span class="parcurs-necesar" id="parcursSeminareIntNecesar">necesar: ?</span>
                         </div>
                         <div class="parcurs-item">
-                            <span class="parcurs-label">Luni de la ultimul examen (K)</span>
+                            <span class="parcurs-label">Luni de la ultimul examen</span>
                             <span class="parcurs-value" id="parcursLuniExamen">-</span>
                             <span class="parcurs-necesar" id="parcursLuniNecesar">necesar: ?</span>
                         </div>
                         <div class="parcurs-item parcurs-info">
-                            <span class="parcurs-label">Zile practică (H, informativ)</span>
+                            <span class="parcurs-label">Zile practică</span>
                             <span class="parcurs-value" id="parcursZile">-</span>
                         </div>
                         <div class="parcurs-item parcurs-info">
@@ -846,10 +825,6 @@
                     document.getElementById('grad').textContent = gradDisplay;
                     document.getElementById('profileGrade').textContent = gradDisplay;
                     document.getElementById('lastExam').textContent = lastExam;
-                    document.getElementById('zilePractica').textContent = zilePractica;
-                    document.getElementById('orePractica').textContent = orePractica;
-                    document.getElementById('lastTraining').textContent = lastTrainingDateStr;
-                    
                     const readyElement = document.getElementById('readyForExam');
                     if (readyForExam === 'Y') {
                         readyElement.textContent = '✓ Yes';
