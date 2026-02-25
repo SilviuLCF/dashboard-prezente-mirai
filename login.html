@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Mirai Dojo Dashboard</title>
+    <link rel="icon" type="image/png" href="mirai-dojo-logo.png">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .login-page {
+            width: 100%;
+            max-width: 440px;
+        }
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .login-header img {
+            max-width: 120px;
+            height: auto;
+            margin-bottom: 15px;
+        }
+        .login-header h1 {
+            color: #fff;
+            font-size: 1.8em;
+            margin-bottom: 8px;
+            text-shadow: 0 0 20px rgba(220, 38, 38, 0.3);
+        }
+        .login-header p {
+            color: #9ca3af;
+            font-size: 1em;
+        }
+        .login-box {
+            background: linear-gradient(135deg, #1f1f1f 0%, #0a0a0a 100%);
+            border: 2px solid #dc2626;
+            border-radius: 15px;
+            padding: 35px;
+            box-shadow: 0 10px 30px rgba(220, 38, 38, 0.2);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            color: #9ca3af;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: #1a1a1a;
+            border: 2px solid #dc2626;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 16px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #ef4444;
+            box-shadow: 0 0 12px rgba(220, 38, 38, 0.25);
+        }
+        .form-group input::placeholder {
+            color: #6b7280;
+        }
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: #fff;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(220, 38, 38, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+        .login-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(220, 38, 38, 0.5);
+        }
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        .login-message {
+            margin-top: 20px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 0.95em;
+            display: none;
+        }
+        .login-message.error {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 2px solid #ef4444;
+        }
+        .login-message.success {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 2px solid #10b981;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 25px;
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 0.95em;
+            transition: color 0.2s;
+        }
+        .back-link:hover {
+            color: #dc2626;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-page">
+        <div class="login-header">
+            <img src="mirai-dojo-logo.png" alt="Mirai Dojo">
+            <h1>Dashboard Prezențe</h1>
+            <p>Autentificare pentru membri</p>
+        </div>
+        <div class="login-box">
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Introdu username-ul" autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="password">Parolă</label>
+                    <input type="password" id="password" name="password" placeholder="Introdu parola" autocomplete="current-password">
+                </div>
+                <button type="submit" class="login-btn" id="loginBtn">🔓 Login</button>
+            </form>
+            <div id="loginMessage" class="login-message"></div>
+        </div>
+        <a href="index.html" class="back-link">← Înapoi la Dashboard (fără login)</a>
+    </div>
+    <script>
+        const ACCOUNTS_SHEET_ID = '1DZZLXB6rm0lXSqLtMdfFXNRWi9Gh9N8oKbXMM63FwQA';
+        const ACCOUNTS_GID = '416511703';
+
+        async function fetchAccounts() {
+            try {
+                const url = `https://docs.google.com/spreadsheets/d/${ACCOUNTS_SHEET_ID}/gviz/tq?gid=${ACCOUNTS_GID}&tqx=out:json`;
+                const response = await fetch(url);
+                const text = await response.text();
+                const jsonMatch = text.match(/google\.visualization\.Query\.setResponse\((.*)\);/s);
+                if (!jsonMatch) throw new Error('Invalid format');
+                const jsonData = JSON.parse(jsonMatch[1]);
+                if (jsonData.status === 'error') throw new Error('Error from Google Sheets');
+                return jsonData.table.rows;
+            } catch (e) {
+                console.error('fetchAccounts:', e);
+                return null;
+            }
+        }
+
+        function showMessage(msg, isError) {
+            const el = document.getElementById('loginMessage');
+            el.textContent = msg;
+            el.className = 'login-message ' + (isError ? 'error' : 'success');
+            el.style.display = 'block';
+            setTimeout(function() { el.style.display = 'none'; }, 4000);
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('loginBtn');
+
+            if (!username || !password) {
+                showMessage('Te rog completează username și parola!', true);
+                return;
+            }
+
+            btn.textContent = '⏳ Se verifică...';
+            btn.disabled = true;
+
+            try {
+                const rows = await fetchAccounts();
+                if (!rows) {
+                    showMessage('Eroare la conectarea cu baza de date!', true);
+                    btn.textContent = '🔓 Login';
+                    btn.disabled = false;
+                    return;
+                }
+
+                for (let i = 0; i < rows.length; i++) {
+                    const cells = rows[i].c;
+                    if (!cells || cells.length < 4) continue;
+                    const nume = cells[1]?.v ? String(cells[1].v).trim() : '';
+                    const sheetUsername = cells[2]?.v ? String(cells[2].v).trim() : '';
+                    const sheetPassword = cells[3]?.v ? String(cells[3].v).trim() : '';
+                    if (!nume || !sheetUsername || nume === 'Nume' || sheetUsername === 'Username') continue;
+                    if (sheetUsername.toLowerCase() === username.toLowerCase() && sheetPassword === password) {
+                        localStorage.setItem('logged_in_user', nume);
+                        localStorage.setItem('logged_in_username', username);
+                        showMessage('Autentificare reușită. Redirectionare...', false);
+                        setTimeout(function() {
+                            window.location.href = 'profil.html';
+                        }, 1000);
+                        return;
+                    }
+                }
+
+                showMessage('Username sau parolă incorectă!', true);
+                btn.textContent = '🔓 Login';
+                btn.disabled = false;
+            } catch (err) {
+                console.error(err);
+                showMessage('Eroare la autentificare!', true);
+                btn.textContent = '🔓 Login';
+                btn.disabled = false;
+            }
+        }
+
+        document.getElementById('password').addEventListener('keypress', function(ev) {
+            if (ev.key === 'Enter') document.getElementById('loginForm').requestSubmit();
+        });
+    </script>
+</body>
+</html>
