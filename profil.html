@@ -899,7 +899,9 @@
                         parcursLuniEl.textContent = '-';
                     }
                     setParcursCompare(seminareNationale, r.seminareNatMin, 'parcursSeminareNationale', '');
-                    const seminareIntNecesar = (r.seminareIntByGrade && grad) ? (r.seminareIntByGrade[grad.toUpperCase()] ?? r.seminareIntMin) : r.seminareIntMin;
+                    let seminareIntNecesar = (r.seminareIntByGrade && grad) ? (r.seminareIntByGrade[grad.toUpperCase()] ?? r.seminareIntMin) : r.seminareIntMin;
+                    const g = (grad || '').toUpperCase();
+                    if (g === 'A1K' || g.endsWith('D')) seminareIntNecesar = Math.max(seminareIntNecesar, 1);
                     setParcursCompare(seminareInternationale, seminareIntNecesar, 'parcursSeminareInternationale', '');
                     const parcursAdv = document.getElementById('parcursAdeverinta');
                     parcursAdv.textContent = adeverinta === 'Y' ? '✓ Da' : '✗ Nu';
