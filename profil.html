@@ -429,6 +429,17 @@
                             <div class="info-value" id="lastTraining">-</div>
                         </div>
                     </div>
+                    <div class="section-subtitle" style="margin-top: 20px; margin-bottom: 12px; color: #9ca3af; font-size: 0.95em; font-weight: 600;">Statistici practică de la ultimul examen</div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Zile de la ultimul examen</div>
+                            <div class="info-value" id="zilePracticaUltimulExamen">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Ore de la ultimul examen</div>
+                            <div class="info-value" id="orePracticaUltimulExamen">-</div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="info-section">
@@ -710,6 +721,8 @@
                     document.getElementById('zilePractica').textContent = zilePractica;
                     document.getElementById('orePractica').textContent = orePractica;
                     document.getElementById('lastTraining').textContent = lastTrainingDateStr;
+                    document.getElementById('zilePracticaUltimulExamen').textContent = zilePractica;
+                    document.getElementById('orePracticaUltimulExamen').textContent = orePractica;
                     
                     const readyElement = document.getElementById('readyForExam');
                     if (readyForExam === 'Y') {
