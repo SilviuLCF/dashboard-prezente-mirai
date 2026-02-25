@@ -872,7 +872,7 @@
                         const n = necesarNum;
                         const el = document.getElementById(elId);
                         if (isNaN(a)) { el.textContent = '-'; return; }
-                        el.textContent = a + (suf || '');
+                        el.textContent = a + ' / ' + n + (suf ? suf : '');
                         el.className = 'parcurs-value ' + (a >= n ? 'ok' : 'missing');
                     };
                     const setParcursYN = (val, elId) => {
@@ -882,10 +882,13 @@
                         el.className = 'parcurs-value ' + (ok ? 'ok' : 'missing');
                     };
                     setParcursCompare(orePractica, r.oreMin, 'parcursOre', ' ore');
-                    const luniStr = luniDeLaExamen != null ? String(luniDeLaExamen) : '-';
-                    document.getElementById('parcursLuniExamen').textContent = luniStr + (luniDeLaExamen != null ? ' luni' : '');
                     const parcursLuniEl = document.getElementById('parcursLuniExamen');
-                    if (luniDeLaExamen != null) parcursLuniEl.className = 'parcurs-value ' + (luniDeLaExamen >= r.luniMin ? 'ok' : 'missing');
+                    if (luniDeLaExamen != null) {
+                        parcursLuniEl.textContent = luniDeLaExamen + ' / ' + r.luniMin + ' luni';
+                        parcursLuniEl.className = 'parcurs-value ' + (luniDeLaExamen >= r.luniMin ? 'ok' : 'missing');
+                    } else {
+                        parcursLuniEl.textContent = '-';
+                    }
                     setParcursCompare(seminareNationale, r.seminareNatMin, 'parcursSeminareNationale', '');
                     setParcursCompare(seminareInternationale, r.seminareIntMin, 'parcursSeminareInternationale', '');
                     const parcursAdv = document.getElementById('parcursAdeverinta');
