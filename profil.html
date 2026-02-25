@@ -598,16 +598,19 @@
                 const c = row30.c;
                 const num = (i) => (c[i] && c[i].v != null) ? Number(c[i].v) : null;
                 const seminareIntByGrade = {};
+                const zileByGrade = {};
                 const gradesOrdered = [];
                 for (let i = 28; i <= 48 && i < rows.length; i++) {
                     const r = rows[i];
                     if (!r || !r.c) continue;
                     const grade = r.c[0]?.v != null ? String(r.c[0].v).trim() : '';
                     const req = r.c[6]?.v != null ? Number(r.c[6].v) : null;
+                    const zile = r.c[4]?.v != null ? Number(r.c[4].v) : null;
                     if (grade) {
                         const g = grade.toUpperCase();
                         gradesOrdered.push(g);
                         if (req != null) seminareIntByGrade[g] = req;
+                        if (zile != null) zileByGrade[g] = zile;
                     }
                 }
                 return {
@@ -615,6 +618,7 @@
                     seminareNatMin: num(5) ?? REQUIRED_PARCURS_FALLBACK.seminareNatMin,
                     seminareIntMin: num(6) ?? REQUIRED_PARCURS_FALLBACK.seminareIntMin,
                     seminareIntByGrade,
+                    zileByGrade,
                     gradesOrdered,
                     luniMin: num(8) ?? REQUIRED_PARCURS_FALLBACK.luniMin
                 };
@@ -897,7 +901,14 @@
                         el.textContent = ok ? '✓ Da' : '✗ Nu';
                         el.className = 'parcurs-value ' + (ok ? 'ok' : 'missing');
                     };
-                    setParcursCompare(orePractica, r.oreMin, 'parcursOre', ' ore');
+                    const g = (grad || '').toUpperCase();
+                    let targetGrade = g;
+                    if (r.gradesOrdered && g) {
+                        const idx = r.gradesOrdered.indexOf(g);
+                        if (idx > 0) targetGrade = r.gradesOrdered[idx - 1];
+                    }
+                    const oreNecesar = (r.zileByGrade && targetGrade) ? (r.zileByGrade[targetGrade] ?? r.oreMin) : r.oreMin;
+                    setParcursCompare(orePractica, oreNecesar, 'parcursOre', ' ore');
                     const parcursLuniEl = document.getElementById('parcursLuniExamen');
                     if (luniDeLaExamen != null) {
                         parcursLuniEl.textContent = luniDeLaExamen + ' / ' + r.luniMin + ' luni';
@@ -906,12 +917,6 @@
                         parcursLuniEl.textContent = '-';
                     }
                     setParcursCompare(seminareNationale, r.seminareNatMin, 'parcursSeminareNationale', '');
-                    const g = (grad || '').toUpperCase();
-                    let targetGrade = g;
-                    if (r.gradesOrdered && g) {
-                        const idx = r.gradesOrdered.indexOf(g);
-                        if (idx >= 0 && idx + 1 < r.gradesOrdered.length) targetGrade = r.gradesOrdered[idx + 1];
-                    }
                     let seminareIntNecesar = (r.seminareIntByGrade && targetGrade) ? (r.seminareIntByGrade[targetGrade] ?? r.seminareIntMin) : r.seminareIntMin;
                     if (g === 'A1K' || g.endsWith('D')) seminareIntNecesar = Math.max(seminareIntNecesar, 1);
                     setParcursCompare(seminareInternationale, seminareIntNecesar, 'parcursSeminareInternationale', '');
