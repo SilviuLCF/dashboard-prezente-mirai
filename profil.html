@@ -523,7 +523,7 @@
         const SHEET_ID = '1DZZLXB6rm0lXSqLtMdfFXNRWi9Gh9N8oKbXMM63FwQA';
         const GID = '1161792968'; // Prezente2026
         const GID_2025 = '706451964'; // Prezente2025
-        // GID pentru tab-ul Utils (pentru formula L: F30, G30, H30, I30). Deschide Utils în browser și copiază gid din URL.
+        // GID pentru tab-ul Utils. Criteriile sunt în A28:L49 (rând 28 = header, 29–49 = date).
         const UTILS_GID = '';
         const REQUIRED_PARCURS_FALLBACK = { oreMin: 100, seminareNatMin: 1, seminareIntMin: 0, luniMin: 12 };
         
@@ -592,12 +592,13 @@
                 const json = JSON.parse(jsonMatch[1]);
                 if (json.status === 'error') return REQUIRED_PARCURS_FALLBACK;
                 const rows = json.table.rows;
+                // A28:L49 — rând 28 = header, 29–49 = date (rows[27]=row28, rows[28..48]=rows29–49)
                 const row30 = rows[29];
                 if (!row30 || !row30.c) return REQUIRED_PARCURS_FALLBACK;
                 const c = row30.c;
                 const num = (i) => (c[i] && c[i].v != null) ? Number(c[i].v) : null;
                 const seminareIntByGrade = {};
-                for (let i = 29; i <= 48 && i < rows.length; i++) {
+                for (let i = 28; i <= 48 && i < rows.length; i++) {
                     const r = rows[i];
                     if (!r || !r.c) continue;
                     const grade = r.c[0]?.v != null ? String(r.c[0].v).trim() : '';
